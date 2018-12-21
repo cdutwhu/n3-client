@@ -1,0 +1,86 @@
+
+*** Panic Error *** Fatal : true ***
+2018/12/07 10:17:11 *errors.withStack unable to create stream connection to server: rpc error: code = Unavailable desc = all SubConns are in TransientFailure, latest connection error: connection error: desc = "transport: Error while dialing dial tcp [::1]:5777: connectex: No connection could be made because the target machine actively refused it."
+c:/Users/qmiao/Downloads/nias3-mq-master/n3pub/n3publisher_test.go:22 (0x8a6b57)
+	TestN3Pub: PE(err)
+C:/Go/src/testing/testing.go:827 (0x4ff946)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x45cab1)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/12 14:26:59 *errors.withStack unable to create stream connection to server: rpc error: code = Unavailable desc = all SubConns are in TransientFailure, latest connection error: connection error: desc = "transport: Error while dialing dial tcp [::1]:5777: connectex: No connection could be made because the target machine actively refused it."
+C:/Users/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:31 (0x8a6379)
+	NewPublisher: PE1(err, "unable to create stream connection to server")
+c:/Users/qmiao/Downloads/nias3-mq-master/n3pub/n3publisher_test.go:21 (0x8a6d78)
+	TestN3Pub: n3pub, err := n3grpc.NewPublisher("localhost", 5777)
+C:/Go/src/testing/testing.go:827 (0x4ff946)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x45cab1)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/14 10:57:24 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x837f88)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:33 (0x838821)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4ef82f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cd31)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/18 13:20:18 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x83ade8)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:31 (0x83b681)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4f029f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/18 16:38:35 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x83ade8)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:31 (0x83b681)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4f029f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/19 09:49:46 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x83ade8)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:32 (0x83b681)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4f029f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/19 09:57:02 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x83ade8)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:32 (0x83b681)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4f029f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2018/12/19 10:01:42 *status.statusError rpc error: code = Unavailable desc = transport is closing
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:58 (0x83ade8)
+	(*Publisher).Query: PE(err)
+/home/qmiao/Desktop/nias3-mq-master/n3pub/n3publisher_test.go:32 (0x83b681)
+	TestN3Pub: ts := n3pub.Query(qTuple, nameSpace, contextName)
+/usr/local/go/src/testing/testing.go:827 (0x4f029f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
+	goexit: BYTE	$0x90	// NOP
