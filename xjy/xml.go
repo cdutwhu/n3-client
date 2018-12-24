@@ -10,14 +10,9 @@ import (
 
 // XMLScanObjects is ( ONLY LIKE  <SchoolInfo RefId="D3F5B90C-D85D-4728-8C6F-0D606070606C"> )
 func XMLScanObjects(xml, idmark string) (ids, objs []string, posarrS []int) {
-	if !strings.HasPrefix(idmark, " ") {
-		idmark = " " + idmark
-	}
-	if !strings.HasSuffix(idmark, "=") {
-		idmark += "="
-	}
+	idmark = u.Str(idmark).MakePrefix(" ")
+	idmark = u.Str(idmark).MakeSuffix("=")
 	lengthID := len(idmark)
-
 	plastAbs := 0
 LOOKFOROBJ:
 	if p := strings.Index(xml[plastAbs:], idmark); p > 0 {

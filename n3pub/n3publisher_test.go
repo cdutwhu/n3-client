@@ -11,7 +11,7 @@ import (
 func TestN3Pub(t *testing.T) {
 	defer func() { PH(recover(), "./log.txt", true) }()
 
-	nameSpace := "3f5mzZ3meuiRXS7QQkWb64aSGXaHgTk9epVzMSnSxUkf"
+	nameSpace := "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
 	contextName := "abc"
 
 	n3pub, err := n3grpc.NewPublisher("localhost", 5777)
