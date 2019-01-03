@@ -1,6 +1,10 @@
 package xjy
 
-import u "github.com/cdutwhu/util"
+import (
+	"strings"
+
+	u "github.com/cdutwhu/util"
+)
 
 var (
 	// PE is
@@ -14,4 +18,10 @@ var (
 
 	// PC is
 	PC = u.PanicOnCondition
+
+	sI  = strings.Index
+	sLI = strings.LastIndex
+	sT  = strings.Trim
+	sTL = strings.TrimLeft
+	sTR = strings.TrimRight
 )

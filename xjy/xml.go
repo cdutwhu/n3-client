@@ -9,43 +9,42 @@ import (
 )
 
 // XMLScanObjects is ( ONLY LIKE  <SchoolInfo RefId="D3F5B90C-D85D-4728-8C6F-0D606070606C"> )
-func XMLScanObjects(xml, idmark string) (ids, objs []string, posarrS []int) {
+func XMLScanObjects(xml, idmark string) (ids, objtags []string, posarr []int) {
 	idmark = u.Str(idmark).MakePrefix(" ")
 	idmark = u.Str(idmark).MakeSuffix("=")
 	lengthID := len(idmark)
-	plastAbs := 0
+	pLastAbs := 0
 LOOKFOROBJ:
-	if p := strings.Index(xml[plastAbs:], idmark); p > 0 {
-		if op := strings.LastIndex(xml[plastAbs:plastAbs+p], "<"); op >= 0 {
-			obj := xml[plastAbs : plastAbs+p][op+1:]
-			objs = append(objs, obj)
-
-			ps := plastAbs + op
-			posarrS = append(posarrS, ps)
+	if p := sI(xml[pLastAbs:], idmark); p > 0 {
+		if op := sLI(xml[pLastAbs:pLastAbs+p], "<"); op >= 0 {
+			obj := xml[pLastAbs : pLastAbs+p][op+1:]
+			objtags = append(objtags, obj)
+			ps := pLastAbs + op
+			posarr = append(posarr, ps)
 		}
-		if ip := strings.Index(xml[plastAbs+p:], ">"); ip > 0 {
-			id := xml[plastAbs+p+lengthID : plastAbs+p+ip]
-			id = strings.Trim(id, "\"")
+		if ip := sI(xml[pLastAbs+p:], ">"); ip > 0 {
+			id := xml[pLastAbs+p+lengthID : pLastAbs+p+ip]
+			id = sT(id, "\"")
 			ids = append(ids, id)
 		}
-
-		plastAbs += (p + lengthID)
+		pLastAbs += (p + lengthID)
 		goto LOOKFOROBJ
 	}
 	return
 }
 
 // XMLObjStrByID is
-func XMLObjStrByID(xml, rid string, ids, objs []string, posarr []int) string {
+func XMLObjStrByID(xml, idmark, rid string) string {
+	ids, objtags, posarr := XMLScanObjects(xml, idmark)
 	for i, id := range ids {
 		if id == rid {
 			if i != len(ids)-1 {
-				return strings.TrimRight(xml[posarr[i]:posarr[i+1]], " \t\r\n")
+				return sTR(xml[posarr[i]:posarr[i+1]], " \t\r\n")
 			}
 			/* last object */
-			endtag := "</" + objs[i] + ">"
-			if end := strings.Index(xml[posarr[i]:], endtag); end > 0 {
-				return strings.TrimRight(xml[posarr[i]:posarr[i]+end+len(endtag)], " \t\r\n")
+			endtag := "</" + objtags[i] + ">"
+			if end := sI(xml[posarr[i]:], endtag); end > 0 {
+				return sTR(xml[posarr[i]:posarr[i]+end+len(endtag)], " \t\r\n")
 			}
 		}
 	}
@@ -54,13 +53,12 @@ func XMLObjStrByID(xml, rid string, ids, objs []string, posarr []int) string {
 
 // XMLEleStrByTag is (should only be used in one object string)
 func XMLEleStrByTag(xml, tag string) string {
-	s := strings.Index(xml, fmt.Sprintf("<%s>", tag))
-	s1 := strings.Index(xml, fmt.Sprintf("<%s ", tag))
+	s, s1 := sI(xml, fmt.Sprintf("<%s>", tag)), sI(xml, fmt.Sprintf("<%s ", tag))
 	if s1 > s {
 		s = s1
 	}
 	if s >= 0 {
-		if e := strings.Index(xml[s:], fmt.Sprintf("</%s>", tag)); e > 0 {
+		if e := sI(xml[s:], fmt.Sprintf("</%s>", tag)); e > 0 {
 			return xml[s : s+e+len(tag)+3]
 		}
 		PE(errors.New("Not a valid XML"))
@@ -71,17 +69,17 @@ func XMLEleStrByTag(xml, tag string) string {
 // XMLFindAttributes is (ONLY LIKE  <SchoolInfo RefId="D3F5B90C-D85D-4728-8C6F-0D606070606C" Type="LGL">)
 func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attributeList string) { /* 'map' may cause mis-order, so use slice */
 	if len(xmlele) == 0 || xmlele[0] != '<' || xmlele[len(xmlele)-1] != '>' {
-		PE(fmt.Errorf("Not Valid XML section"))
+		PE(fmt.Errorf("Not a valid XML section"))
 		return nil, nil, ""
 	}
 
-	tag := xmlele[strings.LastIndex(xmlele, "</")+2 : len(xmlele)-1]
-	if eol := strings.Index(xmlele, "\">") + 1; xmlele[len(tag)+1] == ' ' && eol > len(tag) { /* has attributes */
+	tag := xmlele[sLI(xmlele, "</")+2 : len(xmlele)-1]
+	if eol := sI(xmlele, "\">") + 1; xmlele[len(tag)+1] == ' ' && eol > len(tag) { /* has attributes */
 		kvs := strings.FieldsFunc(xmlele[len(tag)+2:eol], func(c rune) bool { return c == ' ' })
 		for _, kv := range kvs {
 			kvstrs := strings.FieldsFunc(kv, func(c rune) bool { return c == '=' })
 			attributes = append(attributes, ("-" + kvstrs[0])) /* mark '-' before attribute for differentiating child */
-			attriValues = append(attriValues, u.Str(kvstrs[1]).RemoveQuotations())
+			attriValues = append(attriValues, u.Str(kvstrs[1]).RemoveQuotes())
 		}
 	}
 	return attributes, attriValues, strings.Join(attributes, " + ")
@@ -127,7 +125,7 @@ func XMLFindChildren(xmlele string) (children []string, childList string) {
 		}
 	}
 	for _, p := range childpos {
-		pe, peA := strings.Index(xmlele[p:], ">"), strings.Index(xmlele[p:], " ")
+		pe, peA := sI(xmlele[p:], ">"), sI(xmlele[p:], " ")
 		if peA > 0 && peA < pe {
 			pe = peA
 		}
@@ -188,7 +186,7 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 	mapEleChildList := &map[string]string{}
 	XMLYieldAllChildren(xmlstr, objs, skipNoChild, "", mapEleChildList)
 	for k := range *mapEleChildList {
-		(*mapEleChildList)[k] = strings.TrimRight((*mapEleChildList)[k], "+ ")
+		(*mapEleChildList)[k] = sTR((*mapEleChildList)[k], "+ ")
 	}
 	for k, v := range *mapEleChildList {
 		OnOneStructFetch(k, v)
@@ -208,12 +206,12 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 
 // // IsXMLPath is
 // func IsXMLPath(line string) bool {
-// 	return strings.Index(line, "</") == -1
+// 	return sI(line, "</") == -1
 // }
 
 // // IsXMLEndTag is
 // func IsXMLEndTag(line string) bool {
-// 	// return !IsXMLPath(line) && (line[:2] == "</" || strings.Index(line, "\t</") >= 0)
+// 	// return !IsXMLPath(line) && (line[:2] == "</" || sI(line, "\t</") >= 0)
 // 	return strings.HasPrefix(strings.TrimLeft(line, "\t"), "</")
 // }
 
@@ -224,14 +222,14 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 
 // // XMLTag is
 // func XMLTag(line string) string {
-// 	l, r := strings.Index(line, "<"), strings.Index(line, ">")
+// 	l, r := sI(line, "<"), sI(line, ">")
 // 	return strings.FieldsFunc(line[l+1:r], func(c rune) bool { return c == ' ' })[0]
 // }
 
 // // XMLValue is
 // func XMLValue(line string) string {
 // 	if IsXMLValue(line) {
-// 		l, r := strings.Index(line, ">"), strings.Index(line, "</")
+// 		l, r := sI(line, ">"), sI(line, "</")
 // 		return line[l+1 : r]
 // 	}
 // 	return ""
@@ -244,13 +242,13 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 
 // // XMLAttr is
 // func XMLAttr(line string) (tags []string, values []string) {
-// 	// if strings.Index(line, " RefId=") >= 0 {
+// 	// if sI(line, " RefId=") >= 0 {
 // 	// 	return nil, nil
 // 	// }
 // 	if IsXMLEndTag(line) {
 // 		return nil, nil
 // 	}
-// 	l, r := strings.Index(line, "<"), strings.Index(line, ">")
+// 	l, r := sI(line, "<"), sI(line, ">")
 // 	if line[l+1:r] == XMLTag(line) {
 // 		return nil, nil
 // 	}
@@ -284,11 +282,11 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 // // 	objID := ""
 
 // // 	for i, l := range lines {
-// // 		if strings.Index(l, "<!--") >= 0 {
+// // 		if sI(l, "<!--") >= 0 {
 // // 			ignore = true
 // // 			continue
 // // 		}
-// // 		if strings.Index(l, "-->") >= 0 {
+// // 		if sI(l, "-->") >= 0 {
 // // 			ignore = false
 // // 			continue
 // // 		}

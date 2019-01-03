@@ -160,3 +160,28 @@ C:/Go/src/testing/testing.go:827 (0x4cc8e6)
 	tRunner: fn(t)
 C:/Go/src/runtime/asm_amd64.s:1333 (0x459991)
 	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/02 13:49:47 *errors.errorString Not a valid XML section
+/home/qmiao/Desktop/nias3client/xjy/xml.go:73 (0x564988)
+	XMLFindAttributes: PE(fmt.Errorf("Not a valid XML section"))
+/home/qmiao/Desktop/nias3client/xjy/xml_test.go:37 (0x567b39)
+	TestXMLScanObjects: fmt.Println(XMLFindAttributes(xmlobj))
+/usr/local/go/src/testing/testing.go:827 (0x4bf8cf)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x4584f1)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/02 13:51:10 *errors.errorString Not a valid XML section
+/home/qmiao/Desktop/nias3client/xjy/xml.go:73 (0x5649b8)
+	XMLFindAttributes: PE(fmt.Errorf("Not a valid XML section"))
+/home/qmiao/Desktop/nias3client/xjy/xml_test.go:37 (0x567b69)
+	TestXMLScanObjects: fmt.Println(XMLFindAttributes(xmlobj))
+/usr/local/go/src/testing/testing.go:827 (0x4bf8cf)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x4584f1)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/02 16:46:09 runtime error: slice bounds out of range

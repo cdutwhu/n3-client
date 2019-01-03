@@ -30,27 +30,27 @@ func IsYAMLValueLine(line string) bool {
 func YAMLTag(line string) string {
 	// fmt.Println("---", line)
 	if IsYAMLValueLine(line) {
-		if pos := strings.Index(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
-			if pos1 := strings.Index(line, "- "); pos1 >= 0 {
-				return u.Str(strings.TrimLeft(line[pos1+2:pos], " ")).RemoveQuotations()
+		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
+			if pos1 := sI(line, "- "); pos1 >= 0 {
+				return u.Str(sTL(line[pos1+2:pos], " ")).RemoveQuotes()
 			}
-			return u.Str(strings.TrimLeft(line[:pos], " ")).RemoveQuotations()
+			return u.Str(sTL(line[:pos], " ")).RemoveQuotes()
 		}
-		if pos := strings.Index(line, "- "); pos >= 0 { /* Array Element '- Value' line */
+		if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Value' line */
 			return "" /* array element obj */
 		}
 	}
-	return u.Str(strings.TrimLeft(line[:len(line)-1], " ")).RemoveQuotations() /* Pure One Path Section */
+	return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
 }
 
 // YAMLValue is
 func YAMLValue(line string) (value string, arrEleValue bool) {
 	if IsYAMLValueLine(line) {
-		if pos := strings.Index(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
-			return strings.Trim(line[pos+2:len(line)], "\""), false
+		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
+			return sT(line[pos+2:len(line)], "\""), false
 		}
-		if pos := strings.Index(line, "- "); pos >= 0 { /* Array Element '- Obj' line */
-			return strings.Trim(line[pos+2:len(line)], "\""), true
+		if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Obj' line */
+			return sT(line[pos+2:len(line)], "\""), true
 		}
 	}
 	return "", false /* Pure One Path Section */
@@ -130,7 +130,7 @@ func YAMLLines2Nodes(lines []string, idmark string) *[]Node {
 		pn.levelXPath = make([]int, pn.level+1)
 		copy(pn.levelXPath, pnlast.levelXPath)
 
-		if strings.Index(l, idmark) >= 0 {
+		if sI(l, idmark) >= 0 {
 			objID = pn.value
 		}
 		pn.id = objID
@@ -181,7 +181,7 @@ func YAMLAllValuesAsync(yamlstr, objIDMark string, skipDir bool, OnOneValueFetch
 	nodes := YAMLLines2Nodes(lines, objIDMark)
 	for _, n := range *nodes {
 		if skipDir {
-			if len(strings.Trim(n.value, " ")) != 0 {
+			if len(sT(n.value, " ")) != 0 {
 				OnOneValueFetch(n.path, n.value, n.id)
 			}
 		} else {
