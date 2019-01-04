@@ -68,12 +68,13 @@ func XMLEleStrByTag(xml, tag string) string {
 
 // XMLFindAttributes is (ONLY LIKE  <SchoolInfo RefId="D3F5B90C-D85D-4728-8C6F-0D606070606C" Type="LGL">)
 func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attributeList string) { /* 'map' may cause mis-order, so use slice */
-	if len(xmlele) == 0 || xmlele[0] != '<' || xmlele[len(xmlele)-1] != '>' {
-		PE(fmt.Errorf("Not a valid XML section"))
+	l := len(xmlele)
+	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
+		PE(epf("Not a valid XML section"))
 		return nil, nil, ""
 	}
 
-	tag := xmlele[sLI(xmlele, "</")+2 : len(xmlele)-1]
+	tag := xmlele[sLI(xmlele, "</")+2 : l-1]
 	if eol := sI(xmlele, "\">") + 1; xmlele[len(tag)+1] == ' ' && eol > len(tag) { /* has attributes */
 		kvs := strings.FieldsFunc(xmlele[len(tag)+2:eol], func(c rune) bool { return c == ' ' })
 		for _, kv := range kvs {
@@ -85,11 +86,12 @@ func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attribu
 	return attributes, attriValues, strings.Join(attributes, " + ")
 }
 
-// XMLFindChildren is (NOT search grandchildren)
+// XMLFindChildren : (NOT search grandchildren)
 func XMLFindChildren(xmlele string) (children []string, childList string) {
-	if len(xmlele) == 0 || xmlele[0] != '<' || xmlele[len(xmlele)-1] != '>' {
-		fmt.Println(xmlele)
-		PE(fmt.Errorf("Not Valid XML section"))
+	l := len(xmlele)
+	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
+		pln(xmlele)
+		PE(epf("Not a valid XML section"))
 		return nil, "nil"
 	}
 
@@ -124,6 +126,7 @@ func XMLFindChildren(xmlele string) (children []string, childList string) {
 			}
 		}
 	}
+
 	for _, p := range childpos {
 		pe, peA := sI(xmlele[p:], ">"), sI(xmlele[p:], " ")
 		if peA > 0 && peA < pe {
@@ -140,8 +143,8 @@ func XMLFindChildren(xmlele string) (children []string, childList string) {
 	return children, strings.Join(children, " + ")
 }
 
-// XMLYieldAllChildren is (We pack attributes in return map, value like '-...')
-func XMLYieldAllChildren(xmlstr string, objs []string, skipNoChild bool, mapkeyprefix string, mapEleChildList *map[string]string) {
+// XMLYieldFamilyTree is (We pack attributes in return map, value like '-...')
+func XMLYieldFamilyTree(xmlstr string, objs []string, skipNoChild bool, mapkeyprefix string, mapEleChildList *map[string]string) {
 	if len(mapkeyprefix) > 0 {
 		mapkeyprefix += "."
 	}
@@ -174,7 +177,7 @@ func XMLYieldAllChildren(xmlstr string, objs []string, skipNoChild bool, mapkeyp
 		if len(children) == 0 && len(attributeList) == 0 { /* attributes */
 			continue
 		} else {
-			XMLYieldAllChildren(xmlele, children, skipNoChild, mapkeyprefix+obj, mapEleChildList)
+			XMLYieldFamilyTree(xmlele, children, skipNoChild, mapkeyprefix+obj, mapEleChildList)
 		}
 		/* recursive */
 	}
@@ -184,7 +187,7 @@ func XMLYieldAllChildren(xmlstr string, objs []string, skipNoChild bool, mapkeyp
 func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch func(path, value string), done chan<- int) {
 	_, objs, _ := XMLScanObjects(xmlstr, ObjIDMark)
 	mapEleChildList := &map[string]string{}
-	XMLYieldAllChildren(xmlstr, objs, skipNoChild, "", mapEleChildList)
+	XMLYieldFamilyTree(xmlstr, objs, skipNoChild, "", mapEleChildList)
 	for k := range *mapEleChildList {
 		(*mapEleChildList)[k] = sTR((*mapEleChildList)[k], "+ ")
 	}

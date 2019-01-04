@@ -84,3 +84,14 @@ C:/Go/src/runtime/asm_amd64.s:1333 (0x45cab1)
 	tRunner: fn(t)
 /usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cf01)
 	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/04 14:39:34 *errors.withStack unable to create stream connection to server: rpc error: code = Unavailable desc = all SubConns are in TransientFailure, latest connection error: connection error: desc = "transport: Error while dialing dial tcp 127.0.0.1:5777: connect: connection refused"
+/home/qmiao/go/src/github.com/nsip/n3-messages/n3grpc/publisher.go:31 (0x841132)
+	NewPublisher: PE1(err, "unable to create stream connection to server")
+/home/qmiao/Desktop/nias3client/n3pub/n3publisher_test.go:21 (0x8b1cf1)
+	TestN3Pub: n3pub, err := n3grpc.NewPublisher("localhost", 5777)
+/usr/local/go/src/testing/testing.go:827 (0x4f091f)
+	tRunner: fn(t)
+/usr/local/go/src/runtime/asm_amd64.s:1333 (0x45cfa1)
+	goexit: BYTE	$0x90	// NOP

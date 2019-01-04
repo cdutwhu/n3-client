@@ -1,6 +1,7 @@
 package xjy
 
 import (
+	"fmt"
 	"strings"
 
 	u "github.com/cdutwhu/util"
@@ -24,4 +25,9 @@ var (
 	sT  = strings.Trim
 	sTL = strings.TrimLeft
 	sTR = strings.TrimRight
+
+	pln = fmt.Println
+	pf  = fmt.Printf
+	epf = fmt.Errorf
+	spf = fmt.Sprintf
 )

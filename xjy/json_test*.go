@@ -1,7 +1,6 @@
 package xjy
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 )
@@ -13,13 +12,21 @@ func TestJSONScanObjects(t *testing.T) {
 
 	// ids, objs, pos := JSONScanObjects(string(jsonbytes), "id")
 	// for i, id := range ids {
-	// 	fmt.Println(id)
-	// 	fmt.Println(pos[i])
-	// 	fmt.Println(objs[i])
+	// 	pln(id)
+	// 	pln(pos[i])
+	// 	pln(objs[i])
 	// }
 
 	objstr := JSONObjStrByID(string(jsonbytes), "id", "6690e6c9-3ef0-4ed3-8b37-7f3964730bef")
-	// fmt.Println(objstr)
+	// pln(objstr)
 
-	fmt.Println(JSONEleStrByTag(objstr, "test5"))
+	elestr, _ := JSONEleStrByTag(objstr, "testArray")
+	pln(elestr)
+
+	//elestr1 := JSONEleStrByTag(elestr, "definition")
+
+	// children, list := JSONFindChildren(elestr)
+	// pln(children)
+	// pln(list)
+
 }

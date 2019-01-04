@@ -7,40 +7,32 @@ import (
 
 func TestJstr2Y(t *testing.T) {
 
-	ystr := Jstr2Y(`{
-		"id":"7ccd3322-e1a5-411a-a67d-6a735c76f119",
-		"timestamp": "2015-12-18T12:17:00+00:00",
-		"actor":{
-			"objectType": "Agent",
-			"name":"Example Learner",
-			"mbox":"mailto:example.learner@adlnet.gov"
-		},
-		"verb":{
-			"id":"http://adlnet.gov/expapi/verbs/attempted",
-			"display":{
-				"en-US":"attempted"
-			}
-		},
-		"object":{
-			"id":"http://example.adlnet.gov/xapi/example/simpleCBT",
-			"definition":{
-				"name":{
-					"en-US":"simple CBT course"
+	ystr := Jstr2Y(`{"actor": {
+		"name": "Team PB",
+		"mbox": "mailto:teampb@example.com",
+		"member": [
+			{
+				"name": "Andrew Downes",
+				"account": {
+					"homePage": "http://www.example.com",
+					"name": "13936749"
 				},
-				"description":{
-					"en-US":"A fictitious example CBT course."
-				}
-			}
-		},
-		"result":{
-			"score":{
-				"scaled":0.95
+				"objectType": "Agent"
 			},
-			"success":true,
-			"completion":true,
-			"duration": "PT1234S"
-		}
-	}`)
+			{
+				"name": "Toby Nichols",
+				"openid": "http://toby.openid.example.org/",
+				"objectType": "Agent"
+			},
+			{
+				"name": "Ena Hills",
+				"mbox_sha1sum": "ebd31e95054c018b10727ccffd2ef2ec3a016ee9",
+				"objectType": "Agent"
+			}
+		],
+		"objectType": "Group"
+	}
+}`)
 
 	ioutil.WriteFile("test.yaml", []byte(ystr), 0666)
 }

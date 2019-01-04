@@ -28,7 +28,7 @@ func IsYAMLValueLine(line string) bool {
 
 // YAMLTag is
 func YAMLTag(line string) string {
-	// fmt.Println("---", line)
+	// pln("---", line)
 	if IsYAMLValueLine(line) {
 		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
 			if pos1 := sI(line, "- "); pos1 >= 0 {
@@ -49,7 +49,7 @@ func YAMLValue(line string) (value string, arrEleValue bool) {
 		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
 			return sT(line[pos+2:len(line)], "\""), false
 		}
-		if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Obj' line */
+		if pos := sI(line, "- "); pos >= 0 { /* Pure Array Element '- Obj' line */
 			return sT(line[pos+2:len(line)], "\""), true
 		}
 	}
@@ -60,7 +60,7 @@ func YAMLValue(line string) (value string, arrEleValue bool) {
 func YAMLLevel(line string) int {
 	for i, c := range line {
 		if c != ' ' && line[i+1] != ' ' {
-			// PC(i%2 == 1, fmt.Errorf("error yaml format %s: in YAMLLevel", line))
+			// PC(i%2 == 1, epf("error yaml format %s: in YAMLLevel", line))
 			return i / 2
 		}
 	}
@@ -68,50 +68,50 @@ func YAMLLevel(line string) int {
 }
 
 // UpperLevelLine is (deprecated) (using line index is to avoid identical lines in yaml file)
-func UpperLevelLine(idx int, lines []string) (int, string) {
-	thislevel := YAMLLevel(lines[idx])
-	// mapidll["rid"][idx] = thislevel
-	if thislevel == 0 {
-		return -1, ""
-	}
-	for i := idx - 1; i >= 0; i-- {
-		//level := mapidll["rid"][i] /* much faster than YAMLLevel again */
-		level := YAMLLevel(lines[i]) /* much slower than map */
-		if thislevel-level == 1 {
-			return i, lines[i]
-		}
-	}
-	return -1, ""
-}
+// func UpperLevelLine(idx int, lines []string) (int, string) {
+// 	thislevel := YAMLLevel(lines[idx])
+// 	// mapidll["rid"][idx] = thislevel
+// 	if thislevel == 0 {
+// 		return -1, ""
+// 	}
+// 	for i := idx - 1; i >= 0; i-- {
+// 		//level := mapidll["rid"][i] /* much faster than YAMLLevel again */
+// 		level := YAMLLevel(lines[i]) /* much slower than map */
+// 		if thislevel-level == 1 {
+// 			return i, lines[i]
+// 		}
+// 	}
+// 	return -1, ""
+// }
 
 // UpperLevelLines is (deprecated) (Too slow even use map, avoid using this function)
-func UpperLevelLines(idx int, lines []string, self, up2low bool) (idxes []int, strs []string) {
-	if self {
-		idxes, strs = append(idxes, idx), append(strs, lines[idx])
-	}
-	idx, uline := UpperLevelLine(idx, lines)
-	if idx >= 0 {
-		//for mapidll["rid"][idx] > 0 {
-		for YAMLLevel(lines[idx]) > 0 {
-			idxes, strs = append(idxes, idx), append(strs, uline)
-			idx, uline = UpperLevelLine(idx, lines)
-		}
-		idxes, strs = append(idxes, idx), append(strs, uline)
-	}
-	if up2low {
-		for l, r := 0, len(idxes)-1; l < r; l, r = l+1, r-1 {
-			idxes[l], idxes[r] = idxes[r], idxes[l]
-			strs[l], strs[r] = strs[r], strs[l]
-		}
-	}
-	return
-}
+// func UpperLevelLines(idx int, lines []string, self, up2low bool) (idxes []int, strs []string) {
+// 	if self {
+// 		idxes, strs = append(idxes, idx), append(strs, lines[idx])
+// 	}
+// 	idx, uline := UpperLevelLine(idx, lines)
+// 	if idx >= 0 {
+// 		//for mapidll["rid"][idx] > 0 {
+// 		for YAMLLevel(lines[idx]) > 0 {
+// 			idxes, strs = append(idxes, idx), append(strs, uline)
+// 			idx, uline = UpperLevelLine(idx, lines)
+// 		}
+// 		idxes, strs = append(idxes, idx), append(strs, uline)
+// 	}
+// 	if up2low {
+// 		for l, r := 0, len(idxes)-1; l < r; l, r = l+1, r-1 {
+// 			idxes[l], idxes[r] = idxes[r], idxes[l]
+// 			strs[l], strs[r] = strs[r], strs[l]
+// 		}
+// 	}
+// 	return
+// }
 
 /*******************************************************************/
 
 // YAMLLines2Nodes is ,
-func YAMLLines2Nodes(lines []string, idmark string) *[]Node {
-	if !strings.HasPrefix(idmark, "-") {
+func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
+	if fromXML && !strings.HasPrefix(idmark, "-") {
 		idmark = "-" + idmark
 	}
 
@@ -130,7 +130,7 @@ func YAMLLines2Nodes(lines []string, idmark string) *[]Node {
 		pn.levelXPath = make([]int, pn.level+1)
 		copy(pn.levelXPath, pnlast.levelXPath)
 
-		if sI(l, idmark) >= 0 {
+		if ((fromXML && YAMLLevel(l) == 1) || (!fromXML && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
 			objID = pn.value
 		}
 		pn.id = objID
@@ -167,7 +167,11 @@ func YAMLLines2Nodes(lines []string, idmark string) *[]Node {
 	/* remove 'RefId' nodes */
 	nodesNoID := []Node{}
 	for _, n := range nodes {
-		if n.tag != idmark {
+		pf("%s : %d\n", n.tag, n.level)
+		if !fromXML && n.id == "" { /* xapi :  */
+			n.id = objID
+		}
+		if n.tag != idmark || (n.level > 0 && !fromXML) || (n.level > 1 && fromXML) { /* remove 'ID' nodes */
 			nodesNoID = append(nodesNoID, n)
 		}
 	}
@@ -176,9 +180,9 @@ func YAMLLines2Nodes(lines []string, idmark string) *[]Node {
 }
 
 // YAMLAllValuesAsync is
-func YAMLAllValuesAsync(yamlstr, objIDMark string, skipDir bool, OnOneValueFetch func(path, value, id string), done chan<- int) {
+func YAMLAllValuesAsync(yamlstr, objIDMark string, fromXML, skipDir bool, OnOneValueFetch func(path, value, id string), done chan<- int) {
 	lines := strings.FieldsFunc(yamlstr, func(c rune) bool { return c == '\n' })
-	nodes := YAMLLines2Nodes(lines, objIDMark)
+	nodes := YAMLLines2Nodes(lines, objIDMark, fromXML)
 	for _, n := range *nodes {
 		if skipDir {
 			if len(sT(n.value, " ")) != 0 {

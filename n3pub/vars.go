@@ -1,6 +1,10 @@
 package n3pub
 
-import u "github.com/cdutwhu/util"
+import (
+	"fmt"
+
+	u "github.com/cdutwhu/util"
+)
 
 var (
 	// PE is
@@ -14,4 +18,7 @@ var (
 
 	// PC is
 	PC = u.PanicOnCondition
+
+	pln = fmt.Println
+	pf  = fmt.Printf
 )
