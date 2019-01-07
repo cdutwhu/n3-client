@@ -3,7 +3,6 @@ package xjy
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	u "github.com/cdutwhu/util"
 )
@@ -76,14 +75,14 @@ func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attribu
 
 	tag := xmlele[sLI(xmlele, "</")+2 : l-1]
 	if eol := sI(xmlele, "\">") + 1; xmlele[len(tag)+1] == ' ' && eol > len(tag) { /* has attributes */
-		kvs := strings.FieldsFunc(xmlele[len(tag)+2:eol], func(c rune) bool { return c == ' ' })
+		kvs := sFF(xmlele[len(tag)+2:eol], func(c rune) bool { return c == ' ' })
 		for _, kv := range kvs {
-			kvstrs := strings.FieldsFunc(kv, func(c rune) bool { return c == '=' })
+			kvstrs := sFF(kv, func(c rune) bool { return c == '=' })
 			attributes = append(attributes, ("-" + kvstrs[0])) /* mark '-' before attribute for differentiating child */
 			attriValues = append(attriValues, u.Str(kvstrs[1]).RemoveQuotes())
 		}
 	}
-	return attributes, attriValues, strings.Join(attributes, " + ")
+	return attributes, attriValues, sJ(attributes, " + ")
 }
 
 // XMLFindChildren : (NOT search grandchildren)
@@ -140,7 +139,7 @@ func XMLFindChildren(xmlele string) (children []string, childList string) {
 		return children, fmt.Sprintf("[%d]%s", len(children), children[0])
 	}
 
-	return children, strings.Join(children, " + ")
+	return children, sJ(children, " + ")
 }
 
 // XMLYieldFamilyTree is (We pack attributes in return map, value like '-...')
@@ -215,7 +214,7 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 // // IsXMLEndTag is
 // func IsXMLEndTag(line string) bool {
 // 	// return !IsXMLPath(line) && (line[:2] == "</" || sI(line, "\t</") >= 0)
-// 	return strings.HasPrefix(strings.TrimLeft(line, "\t"), "</")
+// 	return sHP(sTL(line, "\t"), "</")
 // }
 
 // // IsXMLValue is
@@ -226,7 +225,7 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 // // XMLTag is
 // func XMLTag(line string) string {
 // 	l, r := sI(line, "<"), sI(line, ">")
-// 	return strings.FieldsFunc(line[l+1:r], func(c rune) bool { return c == ' ' })[0]
+// 	return sFF(line[l+1:r], func(c rune) bool { return c == ' ' })[0]
 // }
 
 // // XMLValue is
@@ -256,11 +255,11 @@ func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch
 // 		return nil, nil
 // 	}
 
-// 	attrs := strings.FieldsFunc(line[l+1:r], func(c rune) bool { return c == ' ' })
+// 	attrs := sFF(line[l+1:r], func(c rune) bool { return c == ' ' })
 // 	for _, attr := range attrs {
-// 		av := strings.FieldsFunc(attr, func(c rune) bool { return c == '=' })
+// 		av := sFF(attr, func(c rune) bool { return c == '=' })
 // 		tags = append(tags, av[0])
-// 		values = append(values, strings.Trim(av[1], "\""))
+// 		values = append(values, sT(av[1], "\""))
 // 	}
 // 	return
 // }

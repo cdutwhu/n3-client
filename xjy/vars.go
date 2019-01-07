@@ -25,6 +25,11 @@ var (
 	sT  = strings.Trim
 	sTL = strings.TrimLeft
 	sTR = strings.TrimRight
+	sHP = strings.HasPrefix
+	sHS = strings.HasSuffix
+	sFF = strings.FieldsFunc
+	sC  = strings.Contains
+	sJ  = strings.Join
 
 	pln = fmt.Println
 	pf  = fmt.Printf

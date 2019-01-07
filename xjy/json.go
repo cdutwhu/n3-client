@@ -1,8 +1,6 @@
 package xjy
 
 import (
-	"strings"
-
 	u "github.com/cdutwhu/util"
 )
 
@@ -75,12 +73,12 @@ func JSONObjStrByID(json, idmark, ID string) string {
 }
 
 // JSONEleStrByTag is
-func JSONEleStrByTag(json, tag string) (string, bool) {
+func JSONEleStrByTag(json, tag string) string {
 	l := len(json)
 	if l == 0 || json[0] != '{' || json[l-1] != '}' {
 		pln(json)
 		PE(epf("Not a valid json section"))
-		return "", false
+		return ""
 	}
 
 	tag = u.Str(tag).MakeQuotes(u.QDouble)
@@ -104,19 +102,20 @@ func JSONEleStrByTag(json, tag string) (string, bool) {
 			bFlat := !u.Str(json[p:p+peR+1]).HasAny('{', '}')
 
 			if peR > 0 && bFlat { /* not last one, flat one */
-				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly), false
+				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly)
 			}
 			if peR < 0 && bFlat {
 				peR = sLI(json[p:], "\"")
-				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly), false
+				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly)
 			}
 			if !bFlat { /* complex one */
-				_, rR := u.Str(json[p:]).BracketsPos(u.BCurly, 1, 1)
-				return u.Str(json[p : p+rR+1]).MakeBrackets(u.BCurly), false
+				str, _, _ := u.Str(json[p:]).BracketsPos(u.BCurly, 1, 1)
+				//return u.Str(json[p : p+rR+1]).MakeBrackets(u.BCurly)
+				return str
 			}
 		}
 	}
-	return u.Str("").MakeBrackets(u.BCurly), false
+	return u.Str("").MakeBrackets(u.BCurly)
 }
 
 // JSONFindChildren :
@@ -172,7 +171,7 @@ func JSONFindChildren(jsonele string) (children []string, childList string) {
 	// 	return children, spf("[%d]%s", len(children), children[0])
 	// }
 
-	return children, strings.Join(children, " + ")
+	return children, sJ(children, " + ")
 }
 
 // JSONYieldFamilyTree :

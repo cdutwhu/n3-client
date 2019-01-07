@@ -1,8 +1,6 @@
 package xjy
 
 import (
-	"strings"
-
 	u "github.com/cdutwhu/util"
 )
 
@@ -17,7 +15,7 @@ import (
 
 // IsYAMLPath is
 func IsYAMLPath(line string) bool {
-	return line[len(line)-1] == ':' && !strings.Contains(line, ": ")
+	return line[len(line)-1] == ':' && !sC(line, ": ")
 }
 
 // IsYAMLValueLine is
@@ -28,32 +26,46 @@ func IsYAMLValueLine(line string) bool {
 
 // YAMLTag is
 func YAMLTag(line string) string {
-	// pln("---", line)
-	if IsYAMLValueLine(line) {
-		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
-			if pos1 := sI(line, "- "); pos1 >= 0 {
-				return u.Str(sTL(line[pos1+2:pos], " ")).RemoveQuotes()
-			}
-			return u.Str(sTL(line[:pos], " ")).RemoveQuotes()
-		}
-		if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Value' line */
-			return "" /* array element obj */
-		}
+	// if IsYAMLValueLine(line) {
+	// 	if pos := sI(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
+	// 		if pos1 := sI(line, "- "); pos1 >= 0 {
+	// 			return u.Str(sTL(line[pos1+2:pos], " ")).RemoveQuotes()
+	// 		}
+	// 		return u.Str(sTL(line[:pos], " ")).RemoveQuotes()
+	// 	}
+	// 	if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Value' line */
+	// 		return "" /* array element obj */
+	// 	}
+	// }
+	// return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
+
+	k, _ := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+	if sHP(k, "- ") {
+		k = u.Str(k[2:]).RemoveQuotes()
 	}
-	return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
+	return k
 }
 
 // YAMLValue is
 func YAMLValue(line string) (value string, arrEleValue bool) {
-	if IsYAMLValueLine(line) {
-		if pos := sI(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
-			return sT(line[pos+2:len(line)], "\""), false
-		}
-		if pos := sI(line, "- "); pos >= 0 { /* Pure Array Element '- Obj' line */
-			return sT(line[pos+2:len(line)], "\""), true
+	// if IsYAMLValueLine(line) {
+	// 	if pos := sI(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
+	// 		return sT(line[pos+2:len(line)], "\""), false
+	// 	}
+	// 	if pos := sI(line, "- "); pos >= 0 { /* Pure Array Element '- Obj' line */
+	// 		return sT(line[pos+2:len(line)], "\""), true
+	// 	}
+	// }
+	// return "", false /* Pure One Path Section */
+
+	_, v := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+	if v == line {
+		v = sT(v, " \t")
+		if sHP(v, "- ") {
+			return u.Str(v[2:]).RemoveQuotes(), true
 		}
 	}
-	return "", false /* Pure One Path Section */
+	return v, false
 }
 
 // YAMLLevel is
@@ -111,7 +123,7 @@ func YAMLLevel(line string) int {
 
 // YAMLLines2Nodes is ,
 func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
-	if fromXML && !strings.HasPrefix(idmark, "-") {
+	if fromXML && !sHP(idmark, "-") {
 		idmark = "-" + idmark
 	}
 
@@ -130,6 +142,7 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 		pn.levelXPath = make([]int, pn.level+1)
 		copy(pn.levelXPath, pnlast.levelXPath)
 
+		/* only get 'top' ID */
 		if ((fromXML && YAMLLevel(l) == 1) || (!fromXML && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
 			objID = pn.value
 		}
@@ -153,7 +166,7 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 
 		for _, p := range pn.levelXPath {
 			tag := YAMLTag(lines[p])
-			if strings.HasPrefix(tag, "- ") { /* remove YAML array symbol '- ' */
+			if sHP(tag, "- ") { /* remove YAML array symbol '- ' */
 				tag = tag[2:]
 			}
 			if len(tag) == 0 {
@@ -167,7 +180,7 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 	/* remove 'RefId' nodes */
 	nodesNoID := []Node{}
 	for _, n := range nodes {
-		pf("%s : %d\n", n.tag, n.level)
+		// pf("%s : %d\n", n.tag, n.level)
 		if !fromXML && n.id == "" { /* xapi :  */
 			n.id = objID
 		}
@@ -181,9 +194,8 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 
 // YAMLAllValuesAsync is
 func YAMLAllValuesAsync(yamlstr, objIDMark string, fromXML, skipDir bool, OnOneValueFetch func(path, value, id string), done chan<- int) {
-	lines := strings.FieldsFunc(yamlstr, func(c rune) bool { return c == '\n' })
-	nodes := YAMLLines2Nodes(lines, objIDMark, fromXML)
-	for _, n := range *nodes {
+	lines := sFF(yamlstr, func(c rune) bool { return c == '\n' })
+	for _, n := range *YAMLLines2Nodes(lines, objIDMark, fromXML) {
 		if skipDir {
 			if len(sT(n.value, " ")) != 0 {
 				OnOneValueFetch(n.path, n.value, n.id)

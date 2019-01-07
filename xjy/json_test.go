@@ -20,7 +20,7 @@ func TestJSONScanObjects(t *testing.T) {
 	objstr := JSONObjStrByID(string(jsonbytes), "id", "6690e6c9-3ef0-4ed3-8b37-7f3964730bef")
 	// pln(objstr)
 
-	elestr, _ := JSONEleStrByTag(objstr, "testArray")
+	elestr := JSONEleStrByTag(objstr, "testArray")
 	pln(elestr)
 
 	//elestr1 := JSONEleStrByTag(elestr, "definition")

@@ -27,7 +27,7 @@ var LE = u.LogOnError
 // 	fi, err := os.Lstat(filename)
 // 	PE(err)
 // 	PC(fi.Mode().IsDir(), epf("%s is a directory", filename))
-// 	PC(!strings.HasSuffix(filename, ".xml"), epf("%s is not an XML file", filename))
+// 	PC(!sHS(filename, ".xml"), epf("%s is not an XML file", filename))
 
 // 	file, err := os.Open(filename)
 // 	PE1(err, fmt.Sprintf("Cannot read in file %s\n", filename))
