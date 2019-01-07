@@ -10,7 +10,8 @@ import (
 func Jstr2Y(jsonstr string) string {
 	yamlbytes, err := yaml.JSONToYAML([]byte(jsonstr))
 	PE1(err, "error on yaml.JSONToYAML")
-	return string(yamlbytes)
+	//return string(yamlbytes)
+	return YAMLRmHangStr(string(yamlbytes)) /* avoid hanging string */
 }
 
 // Jb2Yb is

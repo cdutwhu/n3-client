@@ -58,10 +58,8 @@ id: 6690e6c9-3ef0-4ed3-8b37-7f3964730bee
 object:
   definition:
     description:
-      en-GB: An example meeting that happened on a specific occasion with certain
-        people present.
-      en-US: An example meeting that happened on a specific occasion with certain
-        people present.
+      en-GB: An example meeting that happened on a specific occasion with certain        people present.
+      en-US: An example meeting that happened on a specific occasion with certain        people present.
     extensions:
       http://example.com/profiles/meetings/activitydefinitionextensions/room:
         id: http://example.com/rooms/342

@@ -120,7 +120,7 @@
                 "en-US": "example meeting"
             },
             "description": {
-                "en-GB": "An example meeting that happened on a specific occasion with certain people present.",
+                "en-GB": "An example meeting that happened on a specific occasion with certain people present.", 
                 "en-US": "An example meeting that happened on a specific occasion with certain people present."
             },
             "type": "http://adlnet.gov/expapi/activities/meeting",

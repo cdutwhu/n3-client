@@ -1,8 +1,34 @@
 package xjy
 
-import (
-	u "github.com/cdutwhu/util"
-)
+import u "github.com/cdutwhu/util"
+
+// YAMLRmHangStr is
+func YAMLRmHangStr(yaml string) string {
+	pos, strs, plast := []int{}, []string{}, 0
+	for p, c := range yaml {
+		if c == '\n' {
+			if pe := sI(yaml[p+1:], "\n"); pe >= 0 {
+				l := yaml[p+1 : p+1+pe]
+				if IsYAMLHangString(l) {
+					pos = append(pos, p)
+				}
+			}
+		}
+	}
+	if len(pos) == 0 {
+		return yaml
+	}
+	for _, p := range pos {
+		strs = append(strs, yaml[plast:p])
+		plast = p + 1
+	}
+	if pe := pos[len(pos)-1]; pe < len(yaml) {
+		strs = append(strs, yaml[pe+1:])
+	}
+	return sJ(strs, "")
+}
+
+/*******************************************************/
 
 // var mapidll = make(map[string][]int)
 
@@ -24,48 +50,60 @@ func IsYAMLValueLine(line string) bool {
 	return !IsYAMLPath(line)
 }
 
+// IsYAMLHangString is
+func IsYAMLHangString(line string) bool {
+	l := sT(line, " \t")
+	if !sHP(l, "- ") && !sC(l, ": ") && l[len(l)-1] != ':' {
+		return true
+	}
+	return false
+}
+
 // YAMLTag is
 func YAMLTag(line string) string {
 	// if IsYAMLValueLine(line) {
-	// 	if pos := sI(line, ": "); pos >= 0 { /* Normal 'Tag: Value' line */
+	// 	if p := sI(line, ": "); p >= 0 { /* Normal 'Tag: Value' line */
 	// 		if pos1 := sI(line, "- "); pos1 >= 0 {
-	// 			return u.Str(sTL(line[pos1+2:pos], " ")).RemoveQuotes()
+	// 			return u.Str(sTL(line[pos1+2:p], " ")).RemoveQuotes()
 	// 		}
-	// 		return u.Str(sTL(line[:pos], " ")).RemoveQuotes()
+	// 		return u.Str(sTL(line[:p], " ")).RemoveQuotes()
 	// 	}
-	// 	if pos := sI(line, "- "); pos >= 0 { /* Array Element '- Value' line */
+	// 	if p := sI(line, "- "); p >= 0 { /* Array Element '- Value' line */
 	// 		return "" /* array element obj */
 	// 	}
 	// }
 	// return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
 
-	k, _ := u.Str(line).KeyValuePair(':', '~', '~', true, true)
-	if sHP(k, "- ") {
-		k = u.Str(k[2:]).RemoveQuotes()
+	if IsYAMLValueLine(line) {
+		k, _ := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+		if sHP(k, "- ") {
+			k = u.Str(k[2:]).RemoveQuotes()
+		}
+		return k
 	}
-	return k
+	return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes()
 }
 
 // YAMLValue is
 func YAMLValue(line string) (value string, arrEleValue bool) {
-	// if IsYAMLValueLine(line) {
-	// 	if pos := sI(line, ": "); pos >= 0 { /* Normal 'Sub: Obj' line */
-	// 		return sT(line[pos+2:len(line)], "\""), false
-	// 	}
-	// 	if pos := sI(line, "- "); pos >= 0 { /* Pure Array Element '- Obj' line */
-	// 		return sT(line[pos+2:len(line)], "\""), true
-	// 	}
-	// }
-	// return "", false /* Pure One Path Section */
-
-	_, v := u.Str(line).KeyValuePair(':', '~', '~', true, true)
-	if v == line {
-		v = sT(v, " \t")
-		if sHP(v, "- ") {
-			return u.Str(v[2:]).RemoveQuotes(), true
+	if IsYAMLValueLine(line) {
+		if p := sI(line, ": "); p >= 0 { /* Normal 'Sub: Obj' line */
+			return sT(line[p+2:len(line)], "\""), false
+		}
+		if p := sI(line, "- "); p >= 0 { /* Pure Array Element '- Obj' line */
+			return sT(line[p+2:len(line)], "\""), true
 		}
 	}
-	return v, false
+	return "", false /* Pure One Path Section */
+
+	// _, v := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+	// if v == line {
+	// 	v = sT(v, " \t")
+	// 	if sHP(v, "- ") { /* array's pure element item `- item` */
+	// 		return u.Str(v[2:]).RemoveQuotes(), true
+	// 	}
+	// }
+	// return v, false
 }
 
 // YAMLLevel is
@@ -135,6 +173,12 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 	for i, l := range lines[1:] {
 		i++
 
+		if IsYAMLHangString(l) {
+			pln(l)
+			//nodes[i].
+			//continue
+		}
+
 		pn, pnlast := &nodes[i], &nodes[i-1]
 		pn.tag = YAMLTag(l)
 		pn.value, pn.aevalue = YAMLValue(l) /* pn.path will be filled below from levelXPath */
@@ -143,7 +187,7 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 		copy(pn.levelXPath, pnlast.levelXPath)
 
 		/* only get 'top' ID */
-		if ((fromXML && YAMLLevel(l) == 1) || (!fromXML && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
+		if (fromXML || (!fromXML && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
 			objID = pn.value
 		}
 		pn.id = objID

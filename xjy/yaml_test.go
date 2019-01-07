@@ -1,20 +1,25 @@
 package xjy
 
 import (
+	"io/ioutil"
 	"testing"
 )
 
 func TestYAMLAllValuesAsync(t *testing.T) {
 	defer func() { PH(recover(), "./log.txt", true) }()
 
-	yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)
-	// yamlstr, done := Xfile2Y("./files/staffpersonal.xml"), make(chan int)
-	// yamlstr, done := Jfile2Y(`./files/xapifile.json`), make(chan int)
+	//yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)
+	//ioutil.WriteFile(`./files/nswdig.yaml`, []byte(yamlstr), 0666)
+	//yamlstr, done := Xfile2Y("./files/staffpersonal.xml"), make(chan int)
+	//ioutil.WriteFile(`./files/staffpersonal.yaml`, []byte(yamlstr), 0666)
+	yamlstr, done := Jfile2Y(`./files/xapifile.json`), make(chan int)
+	ioutil.WriteFile(`./files/xapifile.yaml`, []byte(yamlstr), 0666)
 
 	idx := 0
-	go YAMLAllValuesAsync(yamlstr, "RefId", true, true, func(path, value, id string) {
+	go YAMLAllValuesAsync(yamlstr, "id", !true, true, func(path, value, id string) {
 		idx++
-		pf("%d : %s -- %s -- %s\n", idx, path, value, id)
+		pf("%06d : %-80s -- %s -- %s\n", idx, path, value, id)
+		//pf("%06d : %-80s -- \n", idx, path)
 	}, done)
 	pf("finish: %d\n", <-done)
 

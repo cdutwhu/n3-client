@@ -1,7 +1,6 @@
 package n3pub
 
 import (
-	"io/ioutil"
 	"log"
 	"testing"
 
@@ -17,7 +16,9 @@ func TestN3Pub(t *testing.T) {
 	nameSpace := "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
 	contextName := "abc"
 
-	n3pub, err := n3grpc.NewPublisher("localhost", 5777)
+	to := "192.168.76.10"
+	// to := "localhost"
+	n3pub, err := n3grpc.NewPublisher(to, 5777)
 	PE(err)
 	defer n3pub.Close()
 
@@ -44,7 +45,7 @@ func TestN3Pub(t *testing.T) {
 
 	jsonfile := "../xjy/files/xapifile.json"
 	yamlStr := xjy.Jfile2Y(jsonfile)
-	ioutil.WriteFile("../xjy/files/xapifile.yaml", []byte(yamlStr), 0666)
+	// ioutil.WriteFile("../xjy/files/xapifile.yaml", []byte(yamlStr), 0666)
 
 	ver1 := int64(1)
 	go xjy.YAMLAllValuesAsync(yamlStr, "id", false, true, func(p, v, id string) {

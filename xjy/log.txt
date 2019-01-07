@@ -185,3 +185,12 @@ C:/Go/src/runtime/asm_amd64.s:1333 (0x459991)
 
 *** Panic Error *** Fatal : true ***
 2019/01/02 16:46:09 runtime error: slice bounds out of range
+
+*** Panic Error *** Fatal : true ***
+2019/01/07 16:16:52 runtime error: index out of range
+
+*** Panic Error *** Fatal : true ***
+2019/01/07 16:17:32 runtime error: index out of range
+
+*** Panic Error *** Fatal : true ***
+2019/01/07 16:17:48 runtime error: index out of range
