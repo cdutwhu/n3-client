@@ -4,7 +4,7 @@ import u "github.com/cdutwhu/util"
 
 // YAMLRmHangStr is
 func YAMLRmHangStr(yaml string) string {
-	pos, strs, plast := []int{}, []string{}, 0
+	pos, strs, pPrev := []int{}, []string{}, 0
 	for p, c := range yaml {
 		if c == '\n' {
 			if pe := sI(yaml[p+1:], "\n"); pe >= 0 {
@@ -19,13 +19,16 @@ func YAMLRmHangStr(yaml string) string {
 		return yaml
 	}
 	for _, p := range pos {
-		strs = append(strs, yaml[plast:p])
-		plast = p + 1
+		strs = append(strs, yaml[pPrev:p])
+		pPrev = p + 1
 	}
 	if pe := pos[len(pos)-1]; pe < len(yaml) {
 		strs = append(strs, yaml[pe+1:])
 	}
-	return sJ(strs, "")
+	// return sJ(strs, "")
+
+	/* remove surplus blank in value string */
+	return u.Str(sJ(strs, "")).TrimInternalEachLine(' ', 1)
 }
 
 /*******************************************************/
@@ -75,7 +78,7 @@ func YAMLTag(line string) string {
 	// return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
 
 	if IsYAMLValueLine(line) {
-		k, _ := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+		k, _ := u.Str(line).KeyValuePair(": ", '~', '~', true, true)
 		if sHP(k, "- ") {
 			k = u.Str(k[2:]).RemoveQuotes()
 		}
@@ -96,7 +99,7 @@ func YAMLValue(line string) (value string, arrEleValue bool) {
 	}
 	return "", false /* Pure One Path Section */
 
-	// _, v := u.Str(line).KeyValuePair(':', '~', '~', true, true)
+	// _, v := u.Str(line).KeyValuePair(": ", '~', '~', true, true)
 	// if v == line {
 	// 	v = sT(v, " \t")
 	// 	if sHP(v, "- ") { /* array's pure element item `- item` */
@@ -172,12 +175,6 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 
 	for i, l := range lines[1:] {
 		i++
-
-		if IsYAMLHangString(l) {
-			pln(l)
-			//nodes[i].
-			//continue
-		}
 
 		pn, pnlast := &nodes[i], &nodes[i-1]
 		pn.tag = YAMLTag(l)

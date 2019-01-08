@@ -18,8 +18,10 @@ func TestYAMLAllValuesAsync(t *testing.T) {
 	idx := 0
 	go YAMLAllValuesAsync(yamlstr, "id", !true, true, func(path, value, id string) {
 		idx++
-		pf("%06d : %-80s -- %s -- %s\n", idx, path, value, id)
-		//pf("%06d : %-80s -- \n", idx, path)
+		pf("%06d : %s\n", idx, path)
+		pf("%s\n", value)
+		pf("%s\n", id)
+		pln("-----------------------------------------")
 	}, done)
 	pf("finish: %d\n", <-done)
 
