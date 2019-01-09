@@ -7,15 +7,19 @@ package main
 import (
 	"fmt"
 
-	u "github.com/cdutwhu/util"
+	r "./rest"
 )
 
-var PE = u.PanicOnError
-var PE1 = u.PanicOnError1
-var PC = u.PanicOnCondition
-var PH = u.PanicHandle
-var PHE = u.PanicHandleEx
-var LE = u.LogOnError
+var (
+	// 	PE  = u.PanicOnError
+	// 	PE1 = u.PanicOnError1
+	// 	PC  = u.PanicOnCondition
+	// 	PH  = u.PanicHandle
+	// 	PHE = u.PanicHandleEx
+	// 	LE  = u.LogOnError
+
+	pln = fmt.Println
+)
 
 // func SendXmlToDataStore(filename string) {
 // 	defer PH("", false)
@@ -33,68 +37,8 @@ var LE = u.LogOnError
 // 	PE1(err, fmt.Sprintf("Cannot read in file %s\n", filename))
 // }
 
-type S struct {
-	s1 string
-	s2 string
-	s3 string
-}
-
-// func printArrAsync(ss []<-chan string) {
-// 	for _, s := range ss {
-// 		fmt.Println(<-s)
-// 	}
-// 	fmt.Println("over11")
-// }
-
-// func printAsync(s <-chan string) {
-// 	fmt.Println(<-s)
-// 	fmt.Println("over1")
-// }
-
-// func printSAsync(s <-chan S) {
-// 	//fmt.Println(<-s)
-// 	for i := range s {
-// 		fmt.Println(i)
-// 	}
-// 	fmt.Println("over1")
-// }
-
 func main() {
-	// SendXmlToDataStore("C:\\")
-
-	// s := make(chan S)
-	// go printSAsync(s)
-
-	// time.Sleep(2 * time.Second)
-
-	// s <- S{"a", "b", "c"}
-	// close(s)
-
-	// //s <- "abc"
-	// time.Sleep(10 * time.Second)
-	// fmt.Println("over")
-
-	chans := make(chan int, 5)
-	chans <- 1
-	chans <- 2
-	chans <- 3
-	chans <- 4
-	chans <- 5
-	//chans <- 6
-
-	fmt.Println(<-chans)
-	fmt.Println(<-chans)
-	fmt.Println(<-chans)
-	fmt.Println(<-chans)
-	fmt.Println(<-chans)
-
-	chans <- 6
-
-	// close(chans)
-
-	// for c := range chans {
-	// 	fmt.Println(c)
-
-	// }
-
+	doneHTTPHost := make(chan string)
+	go r.HostHTTPForPubAsync()
+	<-doneHTTPHost
 }
