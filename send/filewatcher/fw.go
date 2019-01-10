@@ -2,6 +2,7 @@ package filewatcher
 
 import (
 	"io/ioutil"
+	"time"
 
 	s ".."
 	u "github.com/cdutwhu/util"
@@ -28,8 +29,15 @@ func StartFileWatcherAsync() {
 			lPln("event:", event) // CREATE WRITE REMOVE RENAME
 			if event.Op&fsnotify.Create == fsnotify.Create {
 				lPln("created file:", event.Name)
+
+			AGAIN:
 				bytes, e := ioutil.ReadFile(event.Name)
-				uPE(e)
+				if e != nil && sC(e.Error(), "The process cannot access the file because it is being used by another process") {
+					fPln("read file failed, trying again ...")
+					time.Sleep(500 * time.Millisecond)
+					goto AGAIN
+				}
+
 				str := u.Str(string(bytes))
 				if str.IsJSON() {
 					s.XAPI(str.V())

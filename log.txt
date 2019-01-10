@@ -92,3 +92,24 @@ C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d8f9c)
 	StartFileWatcherAsync: uPE(e)
 C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
 	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:55:46 *os.PathError open inbound\sif\nswdig - Copy.xml: The process cannot access the file because it is being used by another process.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d917c)
+	StartFileWatcherAsync: uPE(e)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:59:13 *os.PathError open inbound\sif\nswdig - Copy.xml: The process cannot access the file because it is being used by another process.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d68fc)
+	StartFileWatcherAsync: uPE(e)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 16:00:50 *os.PathError open inbound\sif\nswdig - Copy.xml: The process cannot access the file because it is being used by another process.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d2a0b)
+	StartFileWatcherAsync: uPE(e)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP

@@ -3,6 +3,7 @@ package filewatcher
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	u "github.com/cdutwhu/util"
 )
@@ -20,6 +21,8 @@ var (
 	fEf  = fmt.Errorf
 	fSpf = fmt.Sprintf
 	lPln = log.Println
+
+	sC = strings.Contains
 
 	sifDir  = "./inbound/sif"
 	xapiDir = "./inbound/xapi"
