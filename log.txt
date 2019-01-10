@@ -1,0 +1,94 @@
+
+*** Panic Error *** Fatal : false ***
+2019/01/10 13:16:59 runtime error: slice bounds out of range
+
+*** Panic Error *** Fatal : false ***
+2019/01/10 13:23:26 *errors.errorString Request Body is invalid xml segment
+C:/Users/qmiao/Desktop/n3-client/rest/controllers/publishSIF.go:26 (0x90f2ce)
+	PublishSIF: uPC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Request Body is invalid xml segment"))
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:488 (0x70f631)
+	(*Echo).Add.func1: return h(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/cors.go:117 (0x774c16)
+	CORSWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/recover.go:78 (0x777a2f)
+	RecoverWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/logger.go:118 (0x776fca)
+	LoggerWithConfig.func2.1: if err = next(c); err != nil {
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:591 (0x707a37)
+	(*Echo).ServeHTTP: if err := h(c); err != nil {
+C:/Go/src/net/http/server.go:2741 (0x67e072)
+	serverHandler.ServeHTTP: handler.ServeHTTP(rw, req)
+C:/Go/src/net/http/server.go:1847 (0x67a3ad)
+	(*conn).serve: serverHandler{c.server}.ServeHTTP(w, w.req)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : false ***
+2019/01/10 13:30:41 *errors.errorString Request Body is invalid xml segment
+C:/Users/qmiao/Desktop/n3-client/rest/controllers/publishSIF.go:26 (0x90f2ce)
+	PublishSIF: uPC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Request Body is invalid xml segment"))
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:488 (0x70f631)
+	(*Echo).Add.func1: return h(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/cors.go:117 (0x774c16)
+	CORSWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/recover.go:78 (0x777a2f)
+	RecoverWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/logger.go:118 (0x776fca)
+	LoggerWithConfig.func2.1: if err = next(c); err != nil {
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:591 (0x707a37)
+	(*Echo).ServeHTTP: if err := h(c); err != nil {
+C:/Go/src/net/http/server.go:2741 (0x67e072)
+	serverHandler.ServeHTTP: handler.ServeHTTP(rw, req)
+C:/Go/src/net/http/server.go:1847 (0x67a3ad)
+	(*conn).serve: serverHandler{c.server}.ServeHTTP(w, w.req)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : false ***
+2019/01/10 13:42:29 *errors.errorString Request Body is invalid xml segment
+C:/Users/qmiao/Desktop/n3-client/rest/controllers/publishSIF.go:26 (0x90f2ce)
+	PublishSIF: uPC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Request Body is invalid xml segment"))
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:488 (0x70f631)
+	(*Echo).Add.func1: return h(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/cors.go:117 (0x774c16)
+	CORSWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/recover.go:78 (0x777a2f)
+	RecoverWithConfig.func1.1: return next(c)
+C:/Users/qmiao/go/src/github.com/labstack/echo/middleware/logger.go:118 (0x776fca)
+	LoggerWithConfig.func2.1: if err = next(c); err != nil {
+C:/Users/qmiao/go/src/github.com/labstack/echo/echo.go:591 (0x707a37)
+	(*Echo).ServeHTTP: if err := h(c); err != nil {
+C:/Go/src/net/http/server.go:2741 (0x67e072)
+	serverHandler.ServeHTTP: handler.ServeHTTP(rw, req)
+C:/Go/src/net/http/server.go:1847 (0x67a3ad)
+	(*conn).serve: serverHandler{c.server}.ServeHTTP(w, w.req)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:18:15 *os.SyscallError GetFileAttributes: The system cannot find the file specified.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:19 (0x8d8c78)
+	StartFileWatcherAsync: uPE(watcher.Add("./siffile"))
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:19:21 *os.SyscallError GetFileAttributes: The system cannot find the file specified.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:20 (0x8d8cba)
+	StartFileWatcherAsync: uPE(watcher.Add("./xapifile"))
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:25:40 *os.PathError open inbound\sif\nswdig.xml: The process cannot access the file because it is being used by another process.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d8f9c)
+	StartFileWatcherAsync: uPE(e)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/10 15:30:48 *os.PathError open inbound\sif\nswdig.xml: The process cannot access the file because it is being used by another process.
+C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d8f9c)
+	StartFileWatcherAsync: uPE(e)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP

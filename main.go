@@ -7,7 +7,8 @@ package main
 import (
 	"fmt"
 
-	r "./rest"
+	w "./send/filewatcher"
+	r "./send/rest"
 )
 
 var (
@@ -38,7 +39,8 @@ var (
 // }
 
 func main() {
-	doneHTTPHost := make(chan string)
+	done := make(chan string)
 	go r.HostHTTPForPubAsync()
-	<-doneHTTPHost
+	go w.StartFileWatcherAsync()
+	<-done
 }
