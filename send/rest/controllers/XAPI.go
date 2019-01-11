@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 
-	s "../.."
+	send "../.."
 )
 
 // PublishXAPI :
@@ -19,6 +19,6 @@ func PublishXAPI(c echo.Context) error {
 
 	body, e := ioutil.ReadAll(c.Request().Body)
 	uPE(e)
-	n := s.XAPI(string(body))
+	n := send.XAPI(string(body))
 	return c.JSON(http.StatusAccepted, fSpf("%d tuples has been sent", n))
 }

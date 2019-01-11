@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"./controllers"
+	ctrl "./controllers"
 )
 
 // HostHTTPForPubAsync : Host a HTTP Server for publishing inbound SIF(xml) or XAPI(json) string(request body) to <n3-transport> grpc Server
@@ -25,8 +25,8 @@ func HostHTTPForPubAsync() {
 
 	// Route
 	e.GET("/", func(c echo.Context) error { return c.String(http.StatusOK, "n3client is alive\n") })
-	e.POST("/sif", controllers.PublishSIF)
-	e.POST("/xapi", controllers.PublishXAPI)
+	e.POST("/sif", ctrl.PublishSIF)
+	e.POST("/xapi", ctrl.PublishXAPI)
 
 	// Server
 	e.Start(":1323")

@@ -1,9 +1,8 @@
-package filewatcher
+package config
 
 import (
 	"fmt"
 	"log"
-	"strings"
 
 	u "github.com/cdutwhu/util"
 )
@@ -21,6 +20,4 @@ var (
 	fEf  = fmt.Errorf
 	fSpf = fmt.Sprintf
 	lPln = log.Println
-
-	sC = strings.Contains
 )

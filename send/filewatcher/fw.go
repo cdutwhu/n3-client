@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	s ".."
+	send ".."
 	u "github.com/cdutwhu/util"
 	"github.com/fsnotify/fsnotify"
 )
@@ -17,8 +17,8 @@ func StartFileWatcherAsync() {
 	uPE(e)
 
 	defer watcher.Close()
-	uPE(watcher.Add(sifDir))
-	uPE(watcher.Add(xapiDir))
+	uPE(watcher.Add(send.Cfg.Filewatcher.Dirsif))
+	uPE(watcher.Add(send.Cfg.Filewatcher.Dirxapi))
 
 	for {
 		select {
@@ -40,9 +40,9 @@ func StartFileWatcherAsync() {
 
 				str := u.Str(string(bytes))
 				if str.IsJSON() {
-					s.XAPI(str.V())
+					send.XAPI(str.V())
 				} else if str.IsXMLSegSimple() {
-					s.SIF(str.V())
+					send.SIF(str.V())
 				}
 			}
 		case err, ok := <-watcher.Errors:

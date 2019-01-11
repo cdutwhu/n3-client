@@ -5,21 +5,10 @@ package main
 // }
 
 import (
-	"fmt"
-
+	send "./send"
+	c "./send/config"
 	w "./send/filewatcher"
 	r "./send/rest"
-)
-
-var (
-	// 	PE  = u.PanicOnError
-	// 	PE1 = u.PanicOnError1
-	// 	PC  = u.PanicOnCondition
-	// 	PH  = u.PanicHandle
-	// 	PHE = u.PanicHandleEx
-	// 	LE  = u.LogOnError
-
-	pln = fmt.Println
 )
 
 // func SendXmlToDataStore(filename string) {
@@ -39,6 +28,10 @@ var (
 // }
 
 func main() {
+	cfg := &c.Config{}
+	cfg.Load("./send/config/config.toml")
+	send.Init(cfg)
+
 	done := make(chan string)
 	go r.HostHTTPForPubAsync()
 	go w.StartFileWatcherAsync()

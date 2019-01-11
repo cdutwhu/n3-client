@@ -6,7 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 
-	s "../.."
+	send "../.."
 )
 
 // PublishSIF :
@@ -19,6 +19,6 @@ func PublishSIF(c echo.Context) error {
 
 	body, e := ioutil.ReadAll(c.Request().Body)
 	uPE(e)
-	n := s.SIF(string(body))
+	n := send.SIF(string(body))
 	return c.JSON(http.StatusAccepted, fSpf("%d tuples has been sent", n))
 }
