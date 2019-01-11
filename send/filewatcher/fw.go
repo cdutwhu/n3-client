@@ -28,14 +28,15 @@ func StartFileWatcherAsync() {
 			}
 			lPln("event:", event) // CREATE WRITE REMOVE RENAME
 			if event.Op&fsnotify.Create == fsnotify.Create {
+				time.Sleep(2 * time.Second)
 				lPln("created file:", event.Name)
 
-			AGAIN:
+			READ_AGAIN:
 				bytes, e := ioutil.ReadFile(event.Name)
 				if e != nil && sC(e.Error(), "The process cannot access the file because it is being used by another process") {
 					fPln("read file failed, trying again ...")
-					time.Sleep(500 * time.Millisecond)
-					goto AGAIN
+					time.Sleep(1000 * time.Millisecond)
+					goto READ_AGAIN
 				}
 
 				str := u.Str(string(bytes))
