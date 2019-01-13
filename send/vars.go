@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"log"
 
+	c "../config"
 	u "github.com/cdutwhu/util"
 	"github.com/nsip/n3-messages/n3grpc"
-
-	c "./config"
 )
 
 var (

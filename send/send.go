@@ -1,12 +1,11 @@
 package send
 
 import (
+	c "../config"
 	"../xjy"
 	u "github.com/cdutwhu/util"
 	"github.com/nsip/n3-messages/messages"
 	"github.com/nsip/n3-messages/n3grpc"
-
-	c "./config"
 )
 
 // Init :
@@ -22,6 +21,10 @@ func Init(cfg *c.Config) {
 
 // SIF is
 func SIF(str string) (cnt int) {
+	if Cfg == nil {
+		panic("Missing Send Init, do 'Init(&config) before sending'")
+	}
+
 	content := u.Str(str)
 	PC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment"))
 
@@ -45,12 +48,16 @@ func SIF(str string) (cnt int) {
 	fPf("sif sent 1: %d\n", <-done)
 	fPf("sif sent 2: %d\n", <-done)
 
-	lPln(fSpf("%06d data tuples sent, %06d struct tuples sent\n", cnt, cnt1))
+	lPln(fSpf("<%06d> data tuples sent, <%06d> struct tuples sent\n", cnt, cnt1))
 	return cnt
 }
 
 // XAPI is
 func XAPI(str string) (cnt int) {
+	if Cfg == nil {
+		panic("Missing Send Init, do 'Init(&config) before sending'")
+	}
+
 	content := u.Str(str)
 	PC(content.L() == 0 || !content.IsJSON(), fEf("Incoming string is invalid json"))
 
@@ -65,6 +72,6 @@ func XAPI(str string) (cnt int) {
 	}, done)
 	fPf("xapi sent : %d\n", <-done)
 
-	lPln(fSpf("%d tuples sent\n", cnt))
+	lPln(fSpf("<%06d> tuples sent\n", cnt))
 	return cnt
 }

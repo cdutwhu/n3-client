@@ -1,0 +1,11 @@
+
+*** Panic Error *** Fatal : true ***
+2019/01/11 10:07:55 *os.PathError open ./config.tom: The system cannot find the file specified.
+c:/Users/qmiao/Desktop/n3-client/send/config/config.go:28 (0x522ced)
+	(*Config).Load: uPE(e)
+c:/Users/qmiao/Desktop/n3-client/send/config/config_test.go:10 (0x522d80)
+	TestLoad: cfg.Load("./config.tom")
+C:/Go/src/testing/testing.go:827 (0x4ce086)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x4594f1)
+	goexit: BYTE	$0x90	// NOP

@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	PE  = u.PanicOnError
-	PE1 = u.PanicOnError1
-	PH  = u.PanicHandle
-	PC  = u.PanicOnCondition
-	pln = fmt.Println
-	pf  = fmt.Printf
+	PE   = u.PanicOnError
+	PE1  = u.PanicOnError1
+	PH   = u.PanicHandle
+	PC   = u.PanicOnCondition
+	fPln = fmt.Println
+	fPf  = fmt.Printf
 )

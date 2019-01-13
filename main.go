@@ -5,8 +5,8 @@ package main
 // }
 
 import (
-	send "./send"
-	c "./send/config"
+	c "./config"
+	s "./send"
 	w "./send/filewatcher"
 	r "./send/rest"
 )
@@ -30,7 +30,7 @@ import (
 func main() {
 	cfg := &c.Config{}
 	cfg.Load("./send/config/config.toml")
-	send.Init(cfg)
+	s.Init(cfg)
 
 	done := make(chan string)
 	go r.HostHTTPForPubAsync()
