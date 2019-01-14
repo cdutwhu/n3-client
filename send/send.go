@@ -45,10 +45,10 @@ func SIF(str string) (cnt int) {
 		PE(n3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.Ctxsif))
 		cnt1++
 	}, done)
-	fPf("sif sent 1: %d\n", <-done)
-	fPf("sif sent 2: %d\n", <-done)
+	fPf("sif decode 1: %d\n", <-done)
+	fPf("sif decode 2: %d\n", <-done)
 
-	lPln(fSpf("<%06d> data tuples sent, <%06d> struct tuples sent\n", cnt, cnt1))
+	lPln(fSpf("<%06d> data tuples decoded, <%06d> struct tuples decoded\n", cnt, cnt1))
 	return cnt
 }
 
@@ -70,8 +70,8 @@ func XAPI(str string) (cnt int) {
 		// fPln("---", *tuple)
 		cnt++
 	}, done)
-	fPf("xapi sent : %d\n", <-done)
+	fPf("xapi decoded : %d\n", <-done)
 
-	lPln(fSpf("<%06d> tuples sent\n", cnt))
+	lPln(fSpf("<%06d> tuples decoded\n", cnt))
 	return cnt
 }

@@ -9,14 +9,17 @@ import (
 	"../send"
 )
 
-func TestN3PubSIF(t *testing.T) {
-	defer func() { PH(recover(), "./log.txt", true) }()
-
+func TestN3LoadConfig(t *testing.T) {
 	cfg := &c.Config{}
 	cfg.Load("../config/config.toml")
 	fPln(cfg.Grpc)
 	fPln(cfg.Filewatcher)
 	send.Init(cfg)
+}
+
+func TestN3PubSIF(t *testing.T) {
+	defer func() { PH(recover(), "./log.txt", true) }()
+	TestN3LoadConfig(t)
 
 	xmlfile := "../xjy/files/staffpersonal.xml"
 	bytes, e := ioutil.ReadFile(xmlfile)
@@ -28,12 +31,7 @@ func TestN3PubSIF(t *testing.T) {
 
 func TestN3PubXAPI(t *testing.T) {
 	defer func() { PH(recover(), "./log.txt", true) }()
-
-	cfg := &c.Config{}
-	cfg.Load("../config/config.toml")
-	fPln(cfg.Grpc)
-	fPln(cfg.Filewatcher)
-	send.Init(cfg)
+	TestN3LoadConfig(t)
 
 	jsonfile := "../xjy/files/xapifile.json"
 	bytes, e := ioutil.ReadFile(jsonfile)

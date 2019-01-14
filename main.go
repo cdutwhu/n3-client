@@ -29,7 +29,7 @@ import (
 
 func main() {
 	cfg := &c.Config{}
-	cfg.Load("./send/config/config.toml")
+	cfg.Load("./config/config.toml")
 	s.Init(cfg)
 
 	done := make(chan string)

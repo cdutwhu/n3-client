@@ -113,3 +113,14 @@ C:/Users/qmiao/Desktop/n3-client/send/filewatcher/fw.go:32 (0x8d2a0b)
 	StartFileWatcherAsync: uPE(e)
 C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
 	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/14 15:38:50 *os.PathError open ./send/config/config.toml: The system cannot find the path specified.
+C:/Users/qmiao/Desktop/n3-client/config/config.go:28 (0x52fe8d)
+	(*Config).Load: uPE(e)
+C:/Users/qmiao/Desktop/n3-client/main.go:32 (0x92a3f0)
+	main: cfg.Load("./send/config/config.toml")
+C:/Go/src/runtime/proc.go:201 (0x42eb47)
+	main: fn()
+C:/Go/src/runtime/asm_amd64.s:1333 (0x457191)
+	goexit: BYTE	$0x90	// NOP
