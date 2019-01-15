@@ -10,30 +10,28 @@ import (
 
 // Init :
 func Init(cfg *c.Config) {
-	if Cfg == nil {
-		Cfg = cfg
-	}
-	if n3pub == nil {
-		n3pub, e = n3grpc.NewPublisher(Cfg.Grpc.Server, Cfg.Grpc.Port)
+	c.Cfg = cfg
+	if c.N3pub == nil {
+		c.N3pub, e = n3grpc.NewPublisher(c.Cfg.Grpc.Server, c.Cfg.Grpc.Port)
 		PE(e)
 	}
 }
 
 // SIF is
 func SIF(str string) (cnt int) {
-	if Cfg == nil {
-		panic("Missing Send Init, do 'Init(&config) before sending'")
+	if c.Cfg == nil || c.N3pub == nil {
+		panic("Missing Init, do 'Init(&config) before sending'")
 	}
 
 	content := u.Str(str)
 	PC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment"))
 
 	done := make(chan int, 2)
-	go xjy.YAMLAllValuesAsync(xjy.Xstr2Y(content.V()), "RefId", true, true, func(p, v, id string) {
+	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.SIF, true, func(p, v, id string) {
 		tuple, _ := messages.NewTuple(id, p, v)
 		tuple.Version = verSIF1
 		verSIF1++
-		PE(n3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.Ctxsif))
+		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 		// fPln("---", *tuple)
 		cnt++
 	}, done)
@@ -42,7 +40,7 @@ func SIF(str string) (cnt int) {
 		tuple, _ := messages.NewTuple(p, "::", v)
 		tuple.Version = verSIF2
 		verSIF2++
-		PE(n3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.Ctxsif))
+		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 		cnt1++
 	}, done)
 	fPf("sif decode 1: %d\n", <-done)
@@ -54,7 +52,7 @@ func SIF(str string) (cnt int) {
 
 // XAPI is
 func XAPI(str string) (cnt int) {
-	if Cfg == nil {
+	if c.Cfg == nil {
 		panic("Missing Send Init, do 'Init(&config) before sending'")
 	}
 
@@ -62,11 +60,11 @@ func XAPI(str string) (cnt int) {
 	PC(content.L() == 0 || !content.IsJSON(), fEf("Incoming string is invalid json"))
 
 	done := make(chan int)
-	go xjy.YAMLAllValuesAsync(xjy.Jstr2Y(content.V()), "id", false, true, func(p, v, id string) {
+	go xjy.YAMLScanAsync(xjy.Jstr2Y(content.V()), "id", xjy.XAPI, true, func(p, v, id string) {
 		tuple, _ := messages.NewTuple(id, p, v)
 		tuple.Version = verXAPI
 		verXAPI++
-		PE(n3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.Ctxxapi))
+		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxxapi))
 		// fPln("---", *tuple)
 		cnt++
 	}, done)

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	send ".."
+	c "../../config"
 	u "github.com/cdutwhu/util"
 	"github.com/fsnotify/fsnotify"
 )
@@ -17,8 +18,8 @@ func StartFileWatcherAsync() {
 	uPE(e)
 
 	defer watcher.Close()
-	uPE(watcher.Add(send.Cfg.Filewatcher.Dirsif))
-	uPE(watcher.Add(send.Cfg.Filewatcher.Dirxapi))
+	uPE(watcher.Add(c.Cfg.Filewatcher.Dirsif))
+	uPE(watcher.Add(c.Cfg.Filewatcher.Dirxapi))
 
 	for {
 		select {

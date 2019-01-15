@@ -1,4 +1,4 @@
-package send
+package query
 
 import (
 	"fmt"
@@ -20,10 +20,6 @@ var (
 	fEf  = fmt.Errorf
 	fSpf = fmt.Sprintf
 	lPln = log.Println
-
-	verSIF1 = int64(1)
-	verSIF2 = int64(1)
-	verXAPI = int64(1)
 
 	e error
 )

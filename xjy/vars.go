@@ -36,3 +36,12 @@ var (
 	epf = fmt.Errorf
 	spf = fmt.Sprintf
 )
+
+type DataType int
+
+const (
+	XML  DataType = 0
+	JSON DataType = 1
+	SIF  DataType = 0
+	XAPI DataType = 1
+)

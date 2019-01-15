@@ -6,6 +6,7 @@ package main
 
 import (
 	c "./config"
+	q "./query"
 	s "./send"
 	w "./send/filewatcher"
 	r "./send/rest"
@@ -31,6 +32,7 @@ func main() {
 	cfg := &c.Config{}
 	cfg.Load("./config/config.toml")
 	s.Init(cfg)
+	q.Init(cfg)
 
 	done := make(chan string)
 	go r.HostHTTPForPubAsync()

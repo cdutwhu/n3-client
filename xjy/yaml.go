@@ -1,6 +1,9 @@
 package xjy
 
-import u "github.com/cdutwhu/util"
+import (
+	u "github.com/cdutwhu/util"
+	"github.com/google/uuid"
+)
 
 // YAMLRmHangStr is
 func YAMLRmHangStr(yaml string) string {
@@ -163,13 +166,16 @@ func YAMLLevel(line string) int {
 /*******************************************************************/
 
 // YAMLLines2Nodes is ,
-func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
-	if fromXML && !sHP(idmark, "-") {
+func YAMLLines2Nodes(lines []string, idmark string, dt DataType) *[]Node {
+	fromSIF := (dt == XML) || (dt == SIF)
+	fromXAPI := (dt == JSON) || (dt == XAPI)
+
+	if fromSIF && !sHP(idmark, "-") {
 		idmark = "-" + idmark
 	}
-
+	hasXapiID := false
 	nodes := make([]Node, len(lines))
-	objID := ""
+	objID := uuid.New().String() // we create a new GUID, if inbound data's id is not blank, overwrite this one, otherwise use this one
 	pn0 := &nodes[0]
 	pn0.tag, pn0.value, pn0.path, pn0.aevalue, pn0.level, pn0.levelXPath, pn0.id = YAMLTag(lines[0]), "", YAMLTag(lines[0]), false, 0, []int{0}, objID
 
@@ -184,8 +190,9 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 		copy(pn.levelXPath, pnlast.levelXPath)
 
 		/* only get 'top' ID */
-		if (fromXML || (!fromXML && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
+		if (fromSIF || (fromXAPI && YAMLLevel(l) == 0)) && sI(l, idmark) >= 0 {
 			objID = pn.value
+			hasXapiID = true
 		}
 		pn.id = objID
 		if (pnlast.level == pn.level || pnlast.level == pn.level-1) && pnlast.id == "" {
@@ -222,10 +229,10 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 	nodesNoID := []Node{}
 	for _, n := range nodes {
 		// pf("%s : %d\n", n.tag, n.level)
-		if !fromXML && n.id == "" { /* xapi :  */
+		if (fromXAPI && n.id == "") || (fromXAPI && hasXapiID) { /* xapi :  */
 			n.id = objID
 		}
-		if n.tag != idmark || (n.level > 0 && !fromXML) || (n.level > 1 && fromXML) { /* remove 'ID' nodes */
+		if n.tag != idmark || (n.level > 0 && fromXAPI) || (n.level > 1 && fromSIF) { /* remove 'ID' nodes */
 			nodesNoID = append(nodesNoID, n)
 		}
 	}
@@ -233,10 +240,10 @@ func YAMLLines2Nodes(lines []string, idmark string, fromXML bool) *[]Node {
 	return &nodesNoID
 }
 
-// YAMLAllValuesAsync is
-func YAMLAllValuesAsync(yamlstr, objIDMark string, fromXML, skipDir bool, OnOneValueFetch func(path, value, id string), done chan<- int) {
+// YAMLScanAsync is
+func YAMLScanAsync(yamlstr, objIDMark string, dt DataType, skipDir bool, OnOneValueFetch func(path, value, id string), done chan<- int) {
 	lines := sFF(yamlstr, func(c rune) bool { return c == '\n' })
-	for _, n := range *YAMLLines2Nodes(lines, objIDMark, fromXML) {
+	for _, n := range *YAMLLines2Nodes(lines, objIDMark, dt) {
 		if skipDir {
 			if len(sT(n.value, " ")) != 0 {
 				OnOneValueFetch(n.path, n.value, n.id)

@@ -2,12 +2,6 @@ package config
 
 import "github.com/burntsushi/toml"
 
-// Config is toml
-type Config struct {
-	Filewatcher filewatcher
-	Grpc        grpc
-}
-
 type filewatcher struct {
 	Dirsif  string
 	Dirxapi string
@@ -19,6 +13,12 @@ type grpc struct {
 	Ctxxapi   string
 	Server    string
 	Port      int
+}
+
+// Config is toml
+type Config struct {
+	Filewatcher filewatcher
+	Grpc        grpc
 }
 
 // Load is
