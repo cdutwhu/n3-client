@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	u "github.com/cdutwhu/util"
+	u "github.com/cdutwhu/go-util"
 )
 
 // XMLScanObjects is ( ONLY LIKE  <SchoolInfo RefId="D3F5B90C-D85D-4728-8C6F-0D606070606C"> )

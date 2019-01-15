@@ -1,7 +1,7 @@
 package xjy
 
 import (
-	u "github.com/cdutwhu/util"
+	u "github.com/cdutwhu/go-util"
 	"github.com/google/uuid"
 )
 

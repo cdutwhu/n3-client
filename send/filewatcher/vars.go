@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	u "github.com/cdutwhu/util"
+	u "github.com/cdutwhu/go-util"
 )
 
 var (

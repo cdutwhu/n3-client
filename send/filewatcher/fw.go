@@ -6,7 +6,7 @@ import (
 
 	send ".."
 	c "../../config"
-	u "github.com/cdutwhu/util"
+	u "github.com/cdutwhu/go-util"
 	"github.com/fsnotify/fsnotify"
 )
 

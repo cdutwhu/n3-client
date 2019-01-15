@@ -3,7 +3,7 @@ package send
 import (
 	c "../config"
 	"../xjy"
-	u "github.com/cdutwhu/util"
+	u "github.com/cdutwhu/go-util"
 	"github.com/nsip/n3-messages/messages"
 	"github.com/nsip/n3-messages/n3grpc"
 )
