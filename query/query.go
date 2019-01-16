@@ -9,8 +9,8 @@ import (
 type qType int
 
 const (
-	qSif  qType = 0
-	qXapi qType = 1
+	qtSif  qType = 0
+	qtXapi qType = 1
 )
 
 // Init :
@@ -25,9 +25,9 @@ func Init(cfg *c.Config) {
 func query(t qType, sp []string) (s, p, o []string, v []int64) {
 	ctx := ""
 	switch t {
-	case qSif:
+	case qtSif:
 		ctx = c.Cfg.Grpc.Ctxsif
-	case qXapi:
+	case qtXapi:
 		ctx = c.Cfg.Grpc.Ctxxapi
 	}
 
@@ -47,10 +47,10 @@ func query(t qType, sp []string) (s, p, o []string, v []int64) {
 
 // SIF :
 func SIF(sp ...string) (s, p, o []string, v []int64) {
-	return query(qSif, sp)
+	return query(qtSif, sp)
 }
 
 // XAPI :
 func XAPI(sp ...string) (s, p, o []string, v []int64) {
-	return query(qXapi, sp)
+	return query(qtXapi, sp)
 }

@@ -50,16 +50,39 @@ func XMLObjStrByID(xml, idmark, rid string) string {
 }
 
 // XMLEleStrByTag is (should only be used in one object string)
-func XMLEleStrByTag(xml, tag string) string {
+// func XMLEleStrByTag(xml, tag string) string {
+// 	s, s1 := sI(xml, fSpf("<%s>", tag)), sI(xml, fSpf("<%s ", tag))
+// 	if s1 > s {
+// 		s = s1
+// 	}
+// 	if s >= 0 {
+// 		if e := sI(xml[s:], fSpf("</%s>", tag)); e > 0 {
+// 			return xml[s : s+e+len(tag)+3]
+// 		}
+// 		PE(errors.New("Not a valid XML"))
+// 	}
+// 	return ""
+// }
+
+// XMLEleStrByTag : (index from 1)
+func XMLEleStrByTag(xml, tag string, idx int) string {
+	startNext, cnt := 0, 0
+AGAIN:
+	xml = xml[startNext:]
 	s, s1 := sI(xml, fSpf("<%s>", tag)), sI(xml, fSpf("<%s ", tag))
 	if s1 > s {
 		s = s1
 	}
 	if s >= 0 {
-		if e := sI(xml[s:], fSpf("</%s>", tag)); e > 0 {
-			return xml[s : s+e+len(tag)+3]
+		if peR := sI(xml[s:], fSpf("</%s>", tag)); peR > 0 {
+			startNext = s + peR + len(tag) + 3
+			cnt++
+			if idx == cnt {
+				return xml[s:startNext]
+			}
+			goto AGAIN
 		}
-		PE(errors.New("Not a valid XML"))
+		PE(errors.New("Invalid XML"))
 	}
 	return ""
 }
@@ -150,7 +173,7 @@ func XMLYieldFamilyTree(xmlstr string, objs []string, skipNoChild bool, mapkeypr
 		if _, ok := (*mapEleChildList)[mapkeyprefix+obj]; ok {
 			continue
 		}
-		xmlele := XMLEleStrByTag(xmlstr, obj)
+		xmlele := XMLEleStrByTag(xmlstr, obj, 1)
 		children, childlist := XMLFindChildren(xmlele)            /* children */
 		attributes, _, attributeList := XMLFindAttributes(xmlele) /* attributes */
 

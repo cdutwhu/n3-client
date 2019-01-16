@@ -35,3 +35,18 @@ func TestXMLScanObjects(t *testing.T) {
 	// fPln()
 	// fPln(XMLFindAttributes(xmlobj))
 }
+
+func TestXMLEleStrByTag(t *testing.T) {
+	fPln(XMLEleStrByTag(`		<OtherNames>
+	<Name Type="AKA">
+		<FamilyName>Anderson</FamilyName>
+		<GivenName>Samuel</GivenName>
+		<FullName>Samuel Anderson</FullName>
+	</Name>
+	<Name Type="PRF">
+		<FamilyName>Rowinski</FamilyName>
+		<GivenName>Sam</GivenName>
+		<FullName>Sam Rowinski </FullName>
+	</Name>
+</OtherNames>`, "Name", 1))
+}
