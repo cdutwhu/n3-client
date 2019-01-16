@@ -228,7 +228,7 @@ func YAMLLines2Nodes(lines []string, idmark string, dt DataType) *[]Node {
 	/* remove 'RefId' nodes */
 	nodesNoID := []Node{}
 	for _, n := range nodes {
-		// pf("%s : %d\n", n.tag, n.level)
+		// fPf("%s : %d\n", n.tag, n.level)
 		if (fromXAPI && n.id == "") || (fromXAPI && hasXapiID) { /* xapi :  */
 			n.id = objID
 		}

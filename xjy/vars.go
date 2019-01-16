@@ -31,10 +31,10 @@ var (
 	sC  = strings.Contains
 	sJ  = strings.Join
 
-	pln = fmt.Println
-	pf  = fmt.Printf
-	epf = fmt.Errorf
-	spf = fmt.Sprintf
+	fPln = fmt.Println
+	fPf  = fmt.Printf
+	fEpf = fmt.Errorf
+	fSpf = fmt.Sprintf
 )
 
 type DataType int

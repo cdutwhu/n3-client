@@ -12,21 +12,21 @@ func TestJSONScanObjects(t *testing.T) {
 
 	// ids, objs, pos := JSONScanObjects(string(jsonbytes), "id")
 	// for i, id := range ids {
-	// 	pln(id)
-	// 	pln(pos[i])
-	// 	pln(objs[i])
+	// 	fPln(id)
+	// 	fPln(pos[i])
+	// 	fPln(objs[i])
 	// }
 
 	objstr := JSONObjStrByID(string(jsonbytes), "id", "6690e6c9-3ef0-4ed3-8b37-7f3964730bef")
-	// pln(objstr)
+	// fPln(objstr)
 
 	elestr := JSONEleStrByTag(objstr, "testArray")
-	pln(elestr)
+	fPln(elestr)
 
 	//elestr1 := JSONEleStrByTag(elestr, "definition")
 
 	// children, list := JSONFindChildren(elestr)
-	// pln(children)
-	// pln(list)
+	// fPln(children)
+	// fPln(list)
 
 }

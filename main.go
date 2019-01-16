@@ -25,7 +25,7 @@ import (
 // 	PC(!sHS(filename, ".xml"), epf("%s is not an XML file", filename))
 
 // 	file, err := os.Open(filename)
-// 	PE1(err, fmt.Sprintf("Cannot read in file %s\n", filename))
+// 	PE1(err, fSpf("Cannot read in file %s\n", filename))
 // }
 
 func main() {
