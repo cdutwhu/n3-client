@@ -21,8 +21,7 @@ var (
 	fSpf = fmt.Sprintf
 	lPln = log.Println
 
-	verSIF1 = int64(1)
-	verSIF2 = int64(1)
+	verSIF  = int64(1)
 	verXAPI = int64(1)
 
 	e error

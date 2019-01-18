@@ -108,12 +108,12 @@ func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attribu
 }
 
 // XMLFindChildren : (NOT search grandchildren)
-func XMLFindChildren(xmlele string) (children []string, childList string) {
+func XMLFindChildren(xmlele, id string) (uids, children []string, childList string, arrCnt int) {
 	l := len(xmlele)
 	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
 		fPln(xmlele)
 		PE(fEpf("Not a valid XML section"))
-		return nil, "nil"
+		return nil, nil, "nil", -1
 	}
 
 	skip, childpos, level, inflag := false, []int{}, 0, false
@@ -155,65 +155,87 @@ func XMLFindChildren(xmlele string) (children []string, childList string) {
 		}
 		child := xmlele[p : p+pe]
 		children = append(children, child)
+		uids = append(uids, id)
 	}
 
 	if len(children) > 1 && u.AllAreIdentical(children...) {
-		return children, fSpf("[%d]%s", len(children), children[0])
+		return uids, children, fSpf("[%d]%s", len(children), children[0]), len(children)
 	}
 
-	return children, sJ(children, " + ")
+	return uids, children, sJ(children, " + "), 0
 }
 
 // XMLYieldFamilyTree is (We pack attributes in return map, value like '-...')
-func XMLYieldFamilyTree(xmlstr string, objs []string, skipNoChild bool, mapkeyprefix string, mapEleChildList *map[string]string) {
+func XMLYieldFamilyTree(xmlstr string, ids, objs []string, skipNoChild bool, mapkeyprefix string,
+	mapEleChildlist *map[string]string, mapEleObjIDArrcnt *map[string]objIDArrcnt) {
+
 	if len(mapkeyprefix) > 0 {
 		mapkeyprefix += "."
 	}
-	for _, obj := range objs {
-		if _, ok := (*mapEleChildList)[mapkeyprefix+obj]; ok {
+	for i, obj := range objs {
+		curPath := mapkeyprefix + obj
+
+		if _, ok := (*mapEleChildlist)[curPath]; ok {
 			continue
 		}
+
 		xmlele := XMLEleStrByTag(xmlstr, obj, 1)
-		children, childlist := XMLFindChildren(xmlele)            /* children */
-		attributes, _, attributeList := XMLFindAttributes(xmlele) /* attributes */
+		uids, children, childlist, arrCnt := XMLFindChildren(xmlele, ids[i]) /* uniform ids, children */
+		attributes, _, attributeList := XMLFindAttributes(xmlele)            /* attributes */
+
+		/* array children info */
+		if arrCnt > 0 {
+			(*mapEleObjIDArrcnt)[curPath] = objIDArrcnt{
+				objID:  ids[i],
+				arrCnt: arrCnt,
+			}
+		}
 
 		/* attributes */
 		if len(attributes) > 0 {
-			(*mapEleChildList)[mapkeyprefix+obj] = attributeList + " + "
-
+			(*mapEleChildlist)[curPath] = attributeList + " + "
 			if len(children) == 0 {
-				(*mapEleChildList)[mapkeyprefix+obj] += "#content"
+				(*mapEleChildlist)[curPath] += "#content"
 			}
 		}
 
 		/* children */
 		if skipNoChild {
 			if len(children) > 0 {
-				(*mapEleChildList)[mapkeyprefix+obj] += childlist
+				(*mapEleChildlist)[curPath] += childlist
 			}
 		} else {
-			(*mapEleChildList)[mapkeyprefix+obj] += childlist
+			(*mapEleChildlist)[curPath] += childlist
 		}
 
 		if len(children) == 0 && len(attributeList) == 0 { /* attributes */
 			continue
 		} else {
-			XMLYieldFamilyTree(xmlele, children, skipNoChild, mapkeyprefix+obj, mapEleChildList)
+			/* recursive */
+			XMLYieldFamilyTree(xmlele, uids, children, skipNoChild, curPath, mapEleChildlist, mapEleObjIDArrcnt)
 		}
-		/* recursive */
 	}
 }
 
+// ObjIDArrcnt :
+type objIDArrcnt struct {
+	objID  string
+	arrCnt int
+}
+
 // XMLStructAsync is
-func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnOneStructFetch func(path, value string), done chan<- int) {
-	_, objs, _ := XMLScanObjects(xmlstr, ObjIDMark)
-	mapEleChildList := &map[string]string{}
-	XMLYieldFamilyTree(xmlstr, objs, skipNoChild, "", mapEleChildList)
-	for k := range *mapEleChildList {
-		(*mapEleChildList)[k] = sTR((*mapEleChildList)[k], "+ ")
+func XMLStructAsync(xmlstr, ObjIDMark string, skipNoChild bool, OnStruFetch func(string, string), OnArrFetch func(string, string, int), done chan<- int) {
+	ids, objs, _ := XMLScanObjects(xmlstr, ObjIDMark)
+	mapEleChildlist, mapEleObjIDArrcnt := &map[string]string{}, &map[string]objIDArrcnt{}
+	XMLYieldFamilyTree(xmlstr, ids, objs, skipNoChild, "", mapEleChildlist, mapEleObjIDArrcnt)
+	// for k := range *mapEleChildlist {
+	// 	(*mapEleChildlist)[k] = sTR((*mapEleChildlist)[k], "+ ")
+	// }
+	for k, v := range *mapEleChildlist {
+		OnStruFetch(k, sTR(v, "+ "))
 	}
-	for k, v := range *mapEleChildList {
-		OnOneStructFetch(k, v)
+	for k, v := range *mapEleObjIDArrcnt {
+		OnArrFetch(k, v.objID, v.arrCnt)
 	}
 	done <- 1
 }

@@ -19,6 +19,6 @@ func PublishSIF(c echo.Context) error {
 
 	body, e := ioutil.ReadAll(c.Request().Body)
 	uPE(e)
-	n := send.SIF(string(body))
-	return c.JSON(http.StatusAccepted, fSpf("%d tuples has been sent", n))
+	nV, nS := send.SIF(string(body))
+	return c.JSON(http.StatusAccepted, fSpf("<%d> value tuples, <%d> struct tuples have been sent", nV, nS))
 }

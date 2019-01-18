@@ -8,6 +8,22 @@ import (
 	"github.com/nsip/n3-messages/n3grpc"
 )
 
+// Junk :
+func Junk(n int) {
+	if c.Cfg == nil || c.N3pub == nil {
+		panic("Missing Init, do 'Init(&config) before sending'")
+	}
+
+	for i := 0; i < n; i++ {
+		tuple, _ := messages.NewTuple("sub", "pre", "obj")
+		tuple.Version = verSIF
+		verSIF++
+		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+	}
+}
+
+/************************************************************/
+
 // Init :
 func Init(cfg *c.Config) {
 	c.Cfg = cfg
@@ -18,7 +34,7 @@ func Init(cfg *c.Config) {
 }
 
 // SIF is
-func SIF(str string) (cnt int) {
+func SIF(str string) (cntV, cntS int) {
 	if c.Cfg == nil || c.N3pub == nil {
 		panic("Missing Init, do 'Init(&config) before sending'")
 	}
@@ -26,28 +42,40 @@ func SIF(str string) (cnt int) {
 	content := u.Str(str)
 	PC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment"))
 
-	done := make(chan int, 2)
-	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.SIF, true, func(p, v, id string) {
-		tuple, _ := messages.NewTuple(id, p, v)
-		tuple.Version = verSIF1
-		verSIF1++
-		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
-		// fPln("---", *tuple)
-		cnt++
-	}, done)
-	cnt1 := 0
-	go xjy.XMLStructAsync(content.V(), "RefId", true, func(p, v string) {
-		tuple, _ := messages.NewTuple(p, "::", v)
-		tuple.Version = verSIF2
-		verSIF2++
-		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
-		cnt1++
-	}, done)
-	fPf("sif decode 1: %d\n", <-done)
-	fPf("sif decode 2: %d\n", <-done)
+	doneV := make(chan int)
+	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.SIF, true,
+		func(p, v, id string) {
+			tuple, _ := messages.NewTuple(id, p, v)
+			tuple.Version = verSIF
+			verSIF++
+			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			// fPln("---", *tuple)
+			cntV++
+		},
+		doneV)
+	<-doneV
 
-	lPln(fSpf("<%06d> data tuples decoded, <%06d> struct tuples decoded\n", cnt, cnt1))
-	return cnt
+	doneS := make(chan int)
+	go xjy.XMLStructAsync(content.V(), "RefId", true,
+		func(p, v string) {
+			tuple, _ := messages.NewTuple(p, "::", v)
+			tuple.Version = verSIF
+			verSIF++
+			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			cntS++
+		},
+		func(p, objid string, arrcnt int) {
+			tuple, _ := messages.NewTuple(p, objid, fSpf("%d", arrcnt))
+			tuple.Version = verSIF
+			verSIF++
+			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			fPln("---", *tuple)
+		},
+		doneS)
+	<-doneS
+
+	lPln(fSpf("<%06d> data tuples decoded, <%06d> struct tuples decoded\n", cntV, cntS))
+	return
 }
 
 // XAPI is
