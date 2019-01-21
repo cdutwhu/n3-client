@@ -2,7 +2,6 @@ package query
 
 import (
 	"testing"
-	"time"
 
 	c "../config"
 )
@@ -26,7 +25,7 @@ func TestQuerySIF(t *testing.T) {
 		fPf("%d # %d: Reply: %s\n%s\n%s \n", i, v[i], s[i], p[i], o[i])
 	}
 	fPln()
-	time.Sleep(2 * time.Second)
+	// time.Sleep(2 * time.Second)
 }
 
 func TestQueryXAPI(t *testing.T) {
@@ -39,5 +38,5 @@ func TestQueryXAPI(t *testing.T) {
 		fPf("%d # %d: Reply: %s\n%s\n%s \n", i, v[i], s[i], p[i], o[i])
 	}
 	fPln()
-	time.Sleep(2 * time.Second)
+	// time.Sleep(2 * time.Second)
 }

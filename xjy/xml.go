@@ -82,7 +82,7 @@ AGAIN:
 			}
 			goto AGAIN
 		}
-		PE(errors.New("Invalid XML"))
+		uPE(errors.New("Invalid XML"))
 	}
 	return ""
 }
@@ -91,7 +91,7 @@ AGAIN:
 func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attributeList string) { /* 'map' may cause mis-order, so use slice */
 	l := len(xmlele)
 	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
-		PE(fEpf("Not a valid XML section"))
+		uPE(fEpf("Not a valid XML section"))
 		return nil, nil, ""
 	}
 
@@ -112,7 +112,7 @@ func XMLFindChildren(xmlele, id string) (uids, children []string, childList stri
 	l := len(xmlele)
 	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
 		fPln(xmlele)
-		PE(fEpf("Not a valid XML section"))
+		uPE(fEpf("Not a valid XML section"))
 		return nil, nil, "nil", -1
 	}
 
@@ -158,8 +158,9 @@ func XMLFindChildren(xmlele, id string) (uids, children []string, childList stri
 		uids = append(uids, id)
 	}
 
-	if len(children) > 1 && u.AllAreIdentical(children...) {
-		return uids, children, fSpf("[%d]%s", len(children), children[0]), len(children)
+	if len(children) > 1 && u.AS2AG(children...).AllAreIdentical() {
+		//return uids, children, fSpf("[%d]%s", len(children), children[0]), len(children)
+		return uids, children, fSpf("[]%s", children[0]), len(children) /* get array count from db, not here. */
 	}
 
 	return uids, children, sJ(children, " + "), 0

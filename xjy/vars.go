@@ -8,17 +8,10 @@ import (
 )
 
 var (
-	// PE is
-	PE = u.PanicOnError
-
-	// PE1 is
-	PE1 = u.PanicOnError1
-
-	// PH is
-	PH = u.PanicHandle
-
-	// PC is
-	PC = u.PanicOnCondition
+	uPE  = u.PanicOnError
+	uPE1 = u.PanicOnError1
+	uPH  = u.PanicHandle
+	uPC  = u.PanicOnCondition
 
 	sI  = strings.Index
 	sLI = strings.LastIndex

@@ -13,9 +13,14 @@ func TestXMLScanObjects(t *testing.T) {
 	PE(err)
 
 	done := make(chan int)
-	go XMLStructAsync(string(xmlbytes), "RefId", true, func(p, v string) {
-		fPf("%-60s:: %s\n", p, v)
-	}, done)
+	go XMLStructAsync(string(xmlbytes), "RefId", true,
+		func(p, v string) {
+			fPf("%-90s:: %s\n", p, v)
+		},
+		func(p, v string, n int) {
+			fPf("%-90s:: %s  -- %d\n", p, v, n)
+		},
+		done)
 
 	fPf("finish: %d\n", <-done)
 

@@ -1,0 +1,55 @@
+
+*** Panic Error *** Fatal : true ***
+2019/01/21 15:01:31 *errors.errorString Not a valid json section
+c:/Users/qmiao/Desktop/n3-client/xjy/json.go:80 (0x592380)
+	JSONEleStrByTag: PE(fEpf("Not a valid json section"))
+c:/Users/qmiao/Desktop/n3-client/xjy/json_test.go:23 (0x5977ab)
+	TestJSONScanObjects: elestr := JSONEleStrByTag(objstr, "testArray")
+C:/Go/src/testing/testing.go:827 (0x4ce4a6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459b21)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/21 15:02:20 *errors.errorString Not a valid json section
+c:/Users/qmiao/Desktop/n3-client/xjy/json.go:80 (0x59226c)
+	JSONEleStrByTag: PE(fEpf("Not a valid json section"))
+c:/Users/qmiao/Desktop/n3-client/xjy/json_test.go:23 (0x59705b)
+	TestJSONScanObjects: elestr := JSONEleStrByTag(objstr, "testArray")
+C:/Go/src/testing/testing.go:827 (0x4ce4a6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459b21)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/21 15:02:47 *errors.errorString Not a valid json section
+c:/Users/qmiao/Desktop/n3-client/xjy/json.go:80 (0x59226c)
+	JSONEleStrByTag: PE(fEpf("Not a valid json section"))
+c:/Users/qmiao/Desktop/n3-client/xjy/json_test.go:23 (0x59705b)
+	TestJSONScanObjects: elestr := JSONEleStrByTag(objstr, "testArray")
+C:/Go/src/testing/testing.go:827 (0x4ce4a6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459b21)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/21 15:03:22 *errors.errorString Not a valid json section
+c:/Users/qmiao/Desktop/n3-client/xjy/json.go:80 (0x59226c)
+	JSONEleStrByTag: PE(fEpf("Not a valid json section"))
+c:/Users/qmiao/Desktop/n3-client/xjy/json_test.go:23 (0x59705b)
+	TestJSONScanObjects: elestr := JSONEleStrByTag(objstr, "actor")
+C:/Go/src/testing/testing.go:827 (0x4ce4a6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459b21)
+	goexit: BYTE	$0x90	// NOP
+
+*** Panic Error *** Fatal : true ***
+2019/01/21 15:03:33 *errors.errorString Not a valid json section
+c:/Users/qmiao/Desktop/n3-client/xjy/json.go:80 (0x59226c)
+	JSONEleStrByTag: PE(fEpf("Not a valid json section"))
+c:/Users/qmiao/Desktop/n3-client/xjy/json_test.go:23 (0x59710f)
+	TestJSONScanObjects: elestr := JSONEleStrByTag(objstr, "actor")
+C:/Go/src/testing/testing.go:827 (0x4ce4a6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459b21)
+	goexit: BYTE	$0x90	// NOP

@@ -77,7 +77,7 @@ func JSONEleStrByTag(json, tag string) string {
 	l := len(json)
 	if l == 0 || json[0] != '{' || json[l-1] != '}' {
 		fPln(json)
-		PE(fEpf("Not a valid json section"))
+		uPE(fEpf("Not a valid json section"))
 		return ""
 	}
 
@@ -123,7 +123,7 @@ func JSONFindChildren(jsonele string) (children []string, childList string) {
 	l := len(jsonele)
 	if l == 0 || jsonele[0] != '{' || jsonele[l-1] != '}' {
 		fPln(jsonele)
-		PE(fEpf("Not a valid json section"))
+		uPE(fEpf("Not a valid json section"))
 		return nil, "nil"
 	}
 
