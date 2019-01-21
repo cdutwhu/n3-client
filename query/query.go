@@ -18,7 +18,7 @@ func Init(cfg *c.Config) {
 	c.Cfg = cfg
 	if c.N3pub == nil {
 		c.N3pub, e = n3grpc.NewPublisher(c.Cfg.Grpc.Server, c.Cfg.Grpc.Port)
-		PE(e)
+		uPE(e)
 	}
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 func TestJunk(t *testing.T) {
-	defer func() { PH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), "./log.txt", true) }()
 	TestN3LoadConfig(t)
 	Junk(10000)
 	time.Sleep(2 * time.Second)
@@ -26,25 +26,25 @@ func TestN3LoadConfig(t *testing.T) {
 }
 
 func TestSendSIF(t *testing.T) {
-	defer func() { PH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), "./log.txt", true) }()
 	TestN3LoadConfig(t)
 
 	// xmlfile := "../inbound/sif/staffpersonal.xml"
 	xmlfile := "../inbound/sif/nswdig.xml"
 	bytes, e := ioutil.ReadFile(xmlfile)
-	PE(e)
+	uPE(e)
 	nV, nS := SIF(string(bytes))
 	fPln(nV, nS)
 	time.Sleep(2 * time.Second)
 }
 
 func TestSendXAPI(t *testing.T) {
-	defer func() { PH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), "./log.txt", true) }()
 	TestN3LoadConfig(t)
 
 	jsonfile := "../inbound/xapi/xapifile.json"
 	bytes, e := ioutil.ReadFile(jsonfile)
-	PE(e)
+	uPE(e)
 	n := XAPI(string(bytes))
 	fPln(n)
 	time.Sleep(2 * time.Second)
