@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	PE  = u.PanicOnError
-	PE1 = u.PanicOnError1
-	PC  = u.PanicOnCondition
-	PH  = u.PanicHandle
-	PHE = u.PanicHandleEx
-	LE  = u.LogOnError
+	uPE  = u.PanicOnError
+	uPE1 = u.PanicOnError1
+	uPC  = u.PanicOnCondition
+	uPH  = u.PanicHandle
+	uPHE = u.PanicHandleEx
+	uLE  = u.LogOnError
 
 	fPln = fmt.Println
 	fPf  = fmt.Printf

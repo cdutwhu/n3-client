@@ -3,10 +3,9 @@ package rest
 import (
 	"net/http"
 
+	ctrl "./controllers"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-
-	ctrl "./controllers"
 )
 
 // HostHTTPForPubAsync : Host a HTTP Server for publishing inbound SIF(xml) or XAPI(json) string(request body) to <n3-transport> grpc Server

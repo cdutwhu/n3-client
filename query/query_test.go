@@ -31,7 +31,7 @@ func TestQuerySIF(t *testing.T) {
 func TestQueryXAPI(t *testing.T) {
 	defer func() { PH(recover(), "./log.txt", true) }()
 	TestN3LoadConfig(t)
-	s, p, o, v := XAPI("6690e6c9-3ef0-4ed3-8b37-7f3964730bee", "actor") /* context must end with '-xapi' */
+	s, p, o, v := XAPI("D3E34F41-9D75-101A-8C3D-00AA001A1652", "actor") /* context must end with '-xapi' */
 	fPln(len(s))
 	for i := range s {
 		fPln("----------------------------------------------------")

@@ -29,6 +29,8 @@ import (
 // }
 
 func main() {
+	defer func() { uPH(recover(), "./log.txt", true) }()	
+
 	cfg := &c.Config{}
 	cfg.Load("./config/config.toml")
 	s.Init(cfg)

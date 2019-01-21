@@ -7,5 +7,5 @@ dirxapi = "./inbound/xapi"
 namespace = "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
 ctxsif = "abc-sif"
 ctxxapi = "abc-xapi"
-server = "192.168.76.10"
+server = "192.168.76.32"
 port = 5777

@@ -18,7 +18,7 @@ func Junk(n int) {
 		tuple, _ := messages.NewTuple("sub", "pre", "obj")
 		tuple.Version = verSIF
 		verSIF++
-		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+		uPE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 	}
 }
 
@@ -29,7 +29,7 @@ func Init(cfg *c.Config) {
 	c.Cfg = cfg
 	if c.N3pub == nil {
 		c.N3pub, e = n3grpc.NewPublisher(c.Cfg.Grpc.Server, c.Cfg.Grpc.Port)
-		PE(e)
+		uPE(e)
 	}
 }
 
@@ -40,7 +40,7 @@ func SIF(str string) (cntV, cntS int) {
 	}
 
 	content := u.Str(str)
-	PC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment"))
+	uPC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment"))
 
 	doneV := make(chan int)
 	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.SIF, true,
@@ -48,7 +48,7 @@ func SIF(str string) (cntV, cntS int) {
 			tuple, _ := messages.NewTuple(id, p, v)
 			tuple.Version = verSIF
 			verSIF++
-			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			uPE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 			// fPln("---", *tuple)
 			cntV++
 		},
@@ -61,14 +61,14 @@ func SIF(str string) (cntV, cntS int) {
 			tuple, _ := messages.NewTuple(p, "::", v)
 			tuple.Version = verSIF
 			verSIF++
-			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			uPE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 			cntS++
 		},
 		func(p, objid string, arrcnt int) {
 			tuple, _ := messages.NewTuple(p, objid, fSpf("%d", arrcnt))
 			tuple.Version = verSIF
 			verSIF++
-			PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
+			uPE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxsif))
 			fPln("---", *tuple)
 		},
 		doneS)
@@ -85,14 +85,14 @@ func XAPI(str string) (cnt int) {
 	}
 
 	content := u.Str(str)
-	PC(content.L() == 0 || !content.IsJSON(), fEf("Incoming string is invalid json"))
+	uPC(content.L() == 0 || !content.IsJSON(), fEf("Incoming string is invalid json"))
 
 	done := make(chan int)
 	go xjy.YAMLScanAsync(xjy.Jstr2Y(content.V()), "id", xjy.XAPI, true, func(p, v, id string) {
 		tuple, _ := messages.NewTuple(id, p, v)
 		tuple.Version = verXAPI
 		verXAPI++
-		PE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxxapi))
+		uPE(c.N3pub.Publish(tuple, c.Cfg.Grpc.Namespace, c.Cfg.Grpc.Ctxxapi))
 		// fPln("---", *tuple)
 		cnt++
 	}, done)
