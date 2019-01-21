@@ -7,10 +7,10 @@ import (
 
 func TestXMLScanObjects(t *testing.T) {
 
-	defer func() { PH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), "./log.txt", true) }()
 
 	xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
-	PE(err)
+	uPE(err)
 
 	done := make(chan int)
 	go XMLStructAsync(string(xmlbytes), "RefId", true,

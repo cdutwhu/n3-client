@@ -6,9 +6,9 @@ import (
 )
 
 func TestJSONScanObjects(t *testing.T) {
-	defer func() { PH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), "./log.txt", true) }()
 	jsonbytes, err := ioutil.ReadFile("./files/xapifile.json")
-	PE(err)
+	uPE(err)
 
 	// ids, objs, pos := JSONScanObjects(string(jsonbytes), "id")
 	// for i, id := range ids {
