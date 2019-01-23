@@ -2,22 +2,17 @@ package query
 
 import (
 	c "../config"
+	g "../global"
 	"github.com/nsip/n3-messages/messages/pb"
 	"github.com/nsip/n3-messages/n3grpc"
 )
 
-type qType int
-
-const (
-	qtSif  qType = 0
-	qtXapi qType = 1
-)
-
 // Init :
-func Init(cfg *c.Config) {
-	c.Cfg = cfg
-	if c.N3pub == nil {
-		c.N3pub, e = n3grpc.NewPublisher(c.Cfg.Grpc.Server, c.Cfg.Grpc.Port)
+func Init(config *c.Config) {
+	uPC(config == nil, fEf("Init Config"))
+	Cfg = config
+	if g.N3pub == nil {
+		g.N3pub, e = n3grpc.NewPublisher(Cfg.Grpc.Server, Cfg.Grpc.Port)
 		uPE(e)
 	}
 }
@@ -26,20 +21,19 @@ func query(t qType, sp []string) (s, p, o []string, v []int64) {
 	ctx := ""
 	switch t {
 	case qtSif:
-		ctx = c.Cfg.Grpc.Ctxsif
+		ctx = Cfg.Grpc.CtxSif
 	case qtXapi:
-		ctx = c.Cfg.Grpc.Ctxxapi
+		ctx = Cfg.Grpc.CtxXapi
 	}
 
-	if c.Cfg == nil || c.N3pub == nil {
-		panic("Missing Init, do 'Init(&config) before querying'")
-	}
+	uPC(Cfg == nil || g.N3pub == nil, fEf("Missing Init, do 'Init(&config) before querying'\n"))
+
 	qTuple := &pb.SPOTuple{
 		Subject:   sp[0],
 		Predicate: sp[1],
 		Object:    "",
 	}
-	for _, t := range c.N3pub.Query(qTuple, c.Cfg.Grpc.Namespace, ctx) {
+	for _, t := range g.N3pub.Query(qTuple, Cfg.Grpc.Namespace, ctx) {
 		s, p, o, v = append(s, t.Subject), append(p, t.Predicate), append(o, t.Object), append(v, t.Version)
 	}
 	return

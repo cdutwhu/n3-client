@@ -3,10 +3,13 @@ package xjy
 import (
 	"io/ioutil"
 	"testing"
+
+	c "../config"
 )
 
 func TestYAMLScanAsync(t *testing.T) {
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	cfg := c.GetConfig("../config/config.go")
+	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 
 	//yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)
 	//ioutil.WriteFile(`./files/nswdig.yaml`, []byte(yamlstr), 0666)

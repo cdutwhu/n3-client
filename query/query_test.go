@@ -7,15 +7,14 @@ import (
 )
 
 func TestN3LoadConfig(t *testing.T) {
-	cfg := &c.Config{}
-	cfg.Load("../config/config.toml")
-	//fPln(cfg.Grpc)
-	//fPln(cfg.Filewatcher)
+	cfg := c.GetConfig("../config/config.toml")
+	fPln(cfg.Grpc)
+	fPln(cfg.Filewatcher)
 	Init(cfg)
 }
 
 func TestQuerySIF(t *testing.T) {
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 	TestN3LoadConfig(t)
 	s, p, o, v := SIF("D3E34F41-9D75-101A-8C3D-00AA001A1652", "StaffPersonal")
 	// s, p, o, v := SIF("D0E7421A-38AE-48D0-985F-D5525D32B56D", "sif.TeachingGroup") /* context must end with '-sif' */
@@ -29,9 +28,9 @@ func TestQuerySIF(t *testing.T) {
 }
 
 func TestQueryXAPI(t *testing.T) {
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 	TestN3LoadConfig(t)
-	s, p, o, v := XAPI("D3E34F41-9D75-101A-8C3D-00AA001A1652", "actor") /* context must end with '-xapi' */
+	s, p, o, v := XAPI("D3E34F41-9D75-101A-8C3D-00AA001A1652", "result") /* context must end with '-xapi' */
 	fPln(len(s))
 	for i := range s {
 		fPln("----------------------------------------------------")

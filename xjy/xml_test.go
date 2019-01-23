@@ -3,11 +3,13 @@ package xjy
 import (
 	"io/ioutil"
 	"testing"
+
+	c "../config"
 )
 
 func TestXMLScanObjects(t *testing.T) {
-
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	cfg := c.GetConfig("../config/config.go")
+	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 
 	xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
 	uPE(err)

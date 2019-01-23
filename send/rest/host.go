@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 
+	s ".."
 	ctrl "./controllers"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -24,9 +25,9 @@ func HostHTTPForPubAsync() {
 
 	// Route
 	e.GET("/", func(c echo.Context) error { return c.String(http.StatusOK, "n3client is alive\n") })
-	e.POST("/sif", ctrl.PublishSIF)
-	e.POST("/xapi", ctrl.PublishXAPI)
+	e.POST(s.Cfg.Rest.SifPath, ctrl.PublishSIF)
+	e.POST(s.Cfg.Rest.XapiPath, ctrl.PublishXAPI)
 
 	// Server
-	e.Start(":1323")
+	e.Start(s.Spf(":%d", s.Cfg.Rest.Port))
 }

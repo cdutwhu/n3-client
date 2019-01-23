@@ -3,10 +3,13 @@ package xjy
 import (
 	"io/ioutil"
 	"testing"
+
+	c "../config"
 )
 
 func TestJSONScanObjects(t *testing.T) {
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	cfg := c.GetConfig("../config/config.go")
+	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 	jsonbytes, err := ioutil.ReadFile("./files/xapifile.json")
 	uPE(err)
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	c "../config"
 	u "github.com/cdutwhu/go-util"
 )
 
@@ -21,5 +22,13 @@ var (
 	fSpf = fmt.Sprintf
 	lPln = log.Println
 
-	e error
+	e   error
+	Cfg *c.Config
+)
+
+type qType int
+
+const (
+	qtSif  qType = 0
+	qtXapi qType = 1
 )

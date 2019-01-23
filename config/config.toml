@@ -1,11 +1,24 @@
-# send config file, both for filewatcher & rest
-[filewatcher]
-dirsif = "./inbound/sif"
-dirxapi = "./inbound/xapi"
+Path = "../config/config.toml"
 
-[grpc]
-namespace = "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
-ctxsif = "abc-sif"
-ctxxapi = "abc-xapi"
-server = "192.168.76.32"
-port = 5777
+[Global]
+  ErrLog = "./log.txt"
+
+[Filewatcher]
+  DirSif = "./inbound/sif"
+  DirXapi = "./inbound/xapi"
+
+[Rest]
+  Port = 1323
+  SifPath = "/sif"
+  XapiPath = "/xapi"
+
+[Grpc]
+  Namespace = "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
+  CtxSif = "abc-sif"
+  CtxXapi = "abc-xapi"
+  Server = "192.168.76.32"
+  Port = 5777
+
+[Temp]
+  VerSif = 118
+  VerXapi = 1
