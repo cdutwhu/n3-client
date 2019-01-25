@@ -20,5 +20,5 @@ Path = "../config/config.toml"
   Port = 5777
 
 [Temp]
-  VerSif = 118
+  VerSif = 1
   VerXapi = 1

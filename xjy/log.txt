@@ -1,0 +1,13 @@
+
+*** Panic Error *** Fatal : true ***
+2019/01/24 14:05:41 toml.parseError Near line 1 (last key parsed 'package'): expected key separator '=', but got 'c' instead
+c:/Users/qmiao/Desktop/n3-client/config/config.go:59 (0x5a7897)
+	(*Config).set: uPE(e)
+c:/Users/qmiao/Desktop/n3-client/config/config.go:50 (0x5a772c)
+	GetConfig: return cfg.set()
+c:/Users/qmiao/Desktop/n3-client/xjy/xml_test.go:11 (0x5ae842)
+	TestXMLScanObjects: cfg := c.GetConfig("../config/config.go")
+C:/Go/src/testing/testing.go:827 (0x4d1dc6)
+	tRunner: fn(t)
+C:/Go/src/runtime/asm_amd64.s:1333 (0x459c51)
+	goexit: BYTE	$0x90	// NOP

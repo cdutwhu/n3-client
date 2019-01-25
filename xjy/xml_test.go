@@ -8,32 +8,31 @@ import (
 )
 
 func TestXMLScanObjects(t *testing.T) {
-	cfg := c.GetConfig("../config/config.go")
+	cfg := c.GetConfig("../config/config.toml")
 	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 
-	xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
+	//xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
+	xmlbytes, err := ioutil.ReadFile("./files/nswdig.xml")
 	uPE(err)
 
-	done := make(chan int)
-	go XMLStructAsync(string(xmlbytes), "RefId", true,
+	XMLModelInfo(string(xmlbytes), "RefId", true,
 		func(p, v string) {
 			fPf("%-90s:: %s\n", p, v)
 		},
 		func(p, v string, n int) {
-			fPf("%-90s:: %s  -- %d\n", p, v, n)
+			fPf("%-90s:: %s  -- [%d]\n", p, v, n)
 		},
-		done)
+	)
+	fPf("finish:\n")
 
-	fPf("finish: %d\n", <-done)
-
-	ids, objtags, psarr := XMLScanObjects(string(xmlbytes), "RefId")
-	fPln(len(objtags))
-	for _, objtag := range objtags {
-		fPln(objtag)
-	}
-	for i := range ids {
-		fPf("%s -- %s -- %d\n", objtags[i], ids[i], psarr[i])
-	}
+	// ids, objtags, psarr := XMLScanObjects(string(xmlbytes), "RefId")
+	// fPln(len(objtags))
+	// for _, objtag := range objtags {
+	// 	fPln(objtag)
+	// }
+	// for i := range ids {
+	// 	fPf("%s -- %s -- %d\n", objtags[i], ids[i], psarr[i])
+	// }
 
 	//fmt.Print(string(xmlbytes[psarr[1]:psarr[2]]))
 

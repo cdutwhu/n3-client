@@ -40,10 +40,30 @@ func SIF(str string) (cntV, cntS, cntA int) {
 	content := u.Str(str)
 	uPC(content.L() == 0 || !content.IsXMLSegSimple(), fEf("Incoming string is invalid xml segment\n"))
 
+	headTrim := "sif."
+
+	xjy.XMLModelInfo(content.V(), "RefId", true,
+		func(p, v string) {
+			tuple, _ := messages.NewTuple(u.Str(p).RmPrefix(headTrim), "::", v)
+			tuple.Version = Cfg.Temp.VerSif
+			Cfg.Temp.VerSif++
+			uPE(g.N3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.CtxSif))
+			cntS++
+		},
+		func(p, objid string, arrcnt int) {
+			tuple, _ := messages.NewTuple(u.Str(p).RmPrefix(headTrim), objid, fSpf("%d", arrcnt))
+			tuple.Version = Cfg.Temp.VerSif
+			Cfg.Temp.VerSif++
+			uPE(g.N3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.CtxSif))
+			cntA++
+			// fPln("|||||||||---", *tuple)
+		},
+	)
+
 	doneV := make(chan int)
 	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.SIF, true,
 		func(p, v, id string) {
-			tuple, _ := messages.NewTuple(id, p, v)
+			tuple, _ := messages.NewTuple(id, u.Str(p).RmPrefix(headTrim), v)
 			tuple.Version = Cfg.Temp.VerSif
 			Cfg.Temp.VerSif++
 			uPE(g.N3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.CtxSif))
@@ -52,26 +72,6 @@ func SIF(str string) (cntV, cntS, cntA int) {
 		},
 		doneV)
 	<-doneV
-
-	doneS := make(chan int)
-	go xjy.XMLStructAsync(content.V(), "RefId", true,
-		func(p, v string) {
-			tuple, _ := messages.NewTuple(p, "::", v)
-			tuple.Version = Cfg.Temp.VerSif
-			Cfg.Temp.VerSif++
-			uPE(g.N3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.CtxSif))
-			cntS++
-		},
-		func(p, objid string, arrcnt int) {
-			tuple, _ := messages.NewTuple(p, objid, fSpf("%d", arrcnt))
-			tuple.Version = Cfg.Temp.VerSif
-			Cfg.Temp.VerSif++
-			uPE(g.N3pub.Publish(tuple, Cfg.Grpc.Namespace, Cfg.Grpc.CtxSif))
-			cntA++
-			fPln("---", *tuple)
-		},
-		doneS)
-	<-doneS
 
 	Cfg.Save()
 	lPln(fSpf("<%06d> data tuples decoded, <%06d> struct tuples decoded, <%06d> array tuples decoded\n", cntV, cntS, cntA))

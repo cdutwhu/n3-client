@@ -70,24 +70,24 @@ func YAMLTag(line string) string {
 	// if IsYAMLValueLine(line) {
 	// 	if p := sI(line, ": "); p >= 0 { /* Normal 'Tag: Value' line */
 	// 		if pos1 := sI(line, "- "); pos1 >= 0 {
-	// 			return u.Str(sTL(line[pos1+2:p], " ")).RemoveQuotes()
+	// 			return u.Str(sTL(line[pos1+2:p], " ")).RmQuotes()
 	// 		}
-	// 		return u.Str(sTL(line[:p], " ")).RemoveQuotes()
+	// 		return u.Str(sTL(line[:p], " ")).RmQuotes()
 	// 	}
 	// 	if p := sI(line, "- "); p >= 0 { /* Array Element '- Value' line */
 	// 		return "" /* array element obj */
 	// 	}
 	// }
-	// return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes() /* Pure One Path Section */
+	// return u.Str(sTL(line[:len(line)-1], " ")).RmQuotes() /* Pure One Path Section */
 
 	if IsYAMLValueLine(line) {
 		k, _ := u.Str(line).KeyValuePair(": ", '~', '~', true, true)
 		if sHP(k, "- ") {
-			k = u.Str(k[2:]).RemoveQuotes()
+			k = u.Str(k[2:]).RmQuotes()
 		}
 		return k
 	}
-	return u.Str(sTL(line[:len(line)-1], " ")).RemoveQuotes()
+	return u.Str(sTL(line[:len(line)-1], " ")).RmQuotes()
 }
 
 // YAMLValue is

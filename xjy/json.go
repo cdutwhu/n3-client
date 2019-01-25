@@ -10,8 +10,8 @@ const (
 
 // JSONScanObjects : (return the whole json string) (must have top-level "id" like `"id": "6690e6c9-3ef0-4ed3-8b37-7f3964730bee",` )
 func JSONScanObjects(json, idmark string) (ids, objstrs []string, posarr []int) {
-	idmark = u.Str(idmark).MakeQuotes(u.QDouble)
-	idmark = u.Str(idmark).MakeSuffix(":")
+	idmark = u.Str(idmark).MkQuotes(u.QDouble)
+	idmark = u.Str(idmark).MkSuffix(":")
 
 	level, arrLevel, done1, done2 := 0, 0, false, false
 	for i, c := range json {
@@ -81,8 +81,8 @@ func JSONEleStrByTag(json, tag string) string {
 		return ""
 	}
 
-	tag = u.Str(tag).MakeQuotes(u.QDouble)
-	tag = u.Str(tag).MakeSuffix(":")
+	tag = u.Str(tag).MkQuotes(u.QDouble)
+	tag = u.Str(tag).MkSuffix(":")
 
 	level, arrLevel := 0, 0
 	for _, c := range json {
@@ -102,20 +102,20 @@ func JSONEleStrByTag(json, tag string) string {
 			bFlat := !u.Str(json[p:p+peR+1]).HasAny('{', '}')
 
 			if peR > 0 && bFlat { /* not last one, flat one */
-				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly)
+				return u.Str(json[p : p+peR+1]).MkBrackets(u.BCurly)
 			}
 			if peR < 0 && bFlat {
 				peR = sLI(json[p:], "\"")
-				return u.Str(json[p : p+peR+1]).MakeBrackets(u.BCurly)
+				return u.Str(json[p : p+peR+1]).MkBrackets(u.BCurly)
 			}
 			if !bFlat { /* complex one */
 				str, _, _ := u.Str(json[p:]).BracketsPos(u.BCurly, 1, 1)
-				//return u.Str(json[p : p+rR+1]).MakeBrackets(u.BCurly)
+				//return u.Str(json[p : p+rR+1]).MkBrackets(u.BCurly)
 				return str
 			}
 		}
 	}
-	return u.Str("").MakeBrackets(u.BCurly)
+	return u.Str("").MkBrackets(u.BCurly)
 }
 
 // JSONFindChildren :
@@ -159,10 +159,10 @@ func JSONFindChildren(jsonele string) (children []string, childList string) {
 		count := u.Str(childvalue).BracketPairCount(u.BCurly)
 
 		if count == 0 { /* not an array element */
-			children = append(children, u.Str(child).RemoveQuotes())
+			children = append(children, u.Str(child).RmQuotes())
 		} else {
 			for j := 0; j < count; j++ {
-				children = append(children, u.Str(child).RemoveQuotes())
+				children = append(children, u.Str(child).RmQuotes())
 			}
 		}
 	}
