@@ -22,7 +22,6 @@ var (
 	PHE  = uPHE
 	uLE  = u.LogOnError
 	LE   = uLE
-
 	fPln = fmt.Println
 	Pln  = fPln
 	fPf  = fmt.Printf
@@ -31,7 +30,6 @@ var (
 	Ef   = fEf
 	fSpf = fmt.Sprintf
 	Spf  = fSpf
-
 	lPln = log.Println
 	LPln = lPln
 
@@ -40,4 +38,19 @@ var (
 
 	e   error
 	Cfg *c.Config
+)
+
+const (
+	TERMMARK = "ENDENDEND"
+	HEADTRIM = "sif."
+	DELAY    = 200
+)
+
+type (
+	sType int
+)
+
+const (
+	SIF  sType = 0
+	XAPI sType = 1
 )

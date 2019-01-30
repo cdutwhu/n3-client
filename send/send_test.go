@@ -18,7 +18,7 @@ func TestJunk(t *testing.T) {
 /************************************************************/
 
 func TestN3LoadConfig(t *testing.T) {
-	cfg := c.GetConfig("../config/config.toml")
+	cfg := c.GetConfig("./config.toml", "../config/config.toml")
 	// fPln(cfg.Grpc)
 	// fPln(cfg.Filewatcher)
 	// fPln(cfg.Path)
@@ -33,9 +33,7 @@ func TestSendSIF(t *testing.T) {
 	xmlfile := "../inbound/sif/nswdig.xml"
 	bytes, e := ioutil.ReadFile(xmlfile)
 	uPE(e)
-	nV, nS, nA := SIF(string(bytes))
-	fPln(nV, nS, nA)
-	time.Sleep(3 * time.Second)
+	SIF(string(bytes))
 }
 
 func TestSendXAPI(t *testing.T) {
@@ -45,7 +43,5 @@ func TestSendXAPI(t *testing.T) {
 	jsonfile := "../inbound/xapi/xapifile.json"
 	bytes, e := ioutil.ReadFile(jsonfile)
 	uPE(e)
-	n := XAPI(string(bytes))
-	fPln(n)
-	time.Sleep(2 * time.Second)
+	XAPI(string(bytes))
 }

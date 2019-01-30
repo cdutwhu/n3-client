@@ -8,7 +8,7 @@ import (
 )
 
 func TestXMLScanObjects(t *testing.T) {
-	cfg := c.GetConfig("../config/config.toml")
+	cfg := c.GetConfig("./config.toml", "../config/config.toml")
 	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 
 	//xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")

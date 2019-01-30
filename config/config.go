@@ -45,9 +45,14 @@ type Config struct {
 }
 
 // GetConfig :
-func GetConfig(cfgfile string) *Config {
-	cfg := &Config{Path: cfgfile}
-	return cfg.set()
+func GetConfig(cfgfiles ...string) *Config {
+	for _, f := range cfgfiles {
+		if _, e := os.Stat(f); e == nil {
+			cfg := &Config{Path: f}
+			return cfg.set()
+		}
+	}
+	panic("config file error")
 }
 
 // set is

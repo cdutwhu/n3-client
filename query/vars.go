@@ -26,9 +26,11 @@ var (
 	Cfg *c.Config
 )
 
-type qType int
+type (
+	qType int
+)
 
 const (
-	qtSif  qType = 0
-	qtXapi qType = 1
+	SIF  qType = 0
+	XAPI qType = 1
 )

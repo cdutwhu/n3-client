@@ -8,7 +8,7 @@ import (
 )
 
 func TestYAMLScanAsync(t *testing.T) {
-	cfg := c.GetConfig("../config/config.go")
+	cfg := c.GetConfig("./config.toml", "../config/config.go")
 	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
 
 	//yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)

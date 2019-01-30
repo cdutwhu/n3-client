@@ -3,6 +3,7 @@ package query
 import (
 	c "../config"
 	g "../global"
+	u "github.com/cdutwhu/go-util"
 	"github.com/nsip/n3-messages/messages/pb"
 	"github.com/nsip/n3-messages/n3grpc"
 )
@@ -18,16 +19,14 @@ func Init(config *c.Config) {
 }
 
 func query(t qType, sp []string) (s, p, o []string, v []int64) {
-	ctx := ""
-	switch t {
-	case qtSif:
-		ctx = Cfg.Grpc.CtxSif
-	case qtXapi:
-		ctx = Cfg.Grpc.CtxXapi
+	// uPC(Cfg == nil || g.N3pub == nil, fEf("Missing Init, do 'Init(&config) before querying'\n"))
+
+	if Cfg == nil || g.N3pub == nil {
+		Cfg = c.GetConfig("./config.toml", "../config/config.toml")
+		Init(Cfg)
 	}
 
-	uPC(Cfg == nil || g.N3pub == nil, fEf("Missing Init, do 'Init(&config) before querying'\n"))
-
+	ctx := u.CaseAssign(t, SIF, XAPI, Cfg.Grpc.CtxSif, Cfg.Grpc.CtxXapi).(string)
 	qTuple := &pb.SPOTuple{
 		Subject:   sp[0],
 		Predicate: sp[1],
@@ -39,12 +38,12 @@ func query(t qType, sp []string) (s, p, o []string, v []int64) {
 	return
 }
 
-// SIF :
-func SIF(sp ...string) (s, p, o []string, v []int64) {
-	return query(qtSif, sp)
+// Sif :
+func Sif(sp ...string) (s, p, o []string, v []int64) {
+	return query(SIF, sp)
 }
 
-// XAPI :
-func XAPI(sp ...string) (s, p, o []string, v []int64) {
-	return query(qtXapi, sp)
+// Xapi :
+func Xapi(sp ...string) (s, p, o []string, v []int64) {
+	return query(XAPI, sp)
 }
