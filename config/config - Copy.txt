@@ -1,4 +1,4 @@
-Path = "./config.toml"
+Path = "../config/config.toml"
 
 [Global]
   ErrLog = "./log.txt"
@@ -12,7 +12,7 @@ Path = "./config.toml"
   SifPath = "/sif"
   XapiPath = "/xapi"
 
-[RPC]
+[Rpc]
   Namespace = "Aa5fKf2UmyfCufY6JFmQpX12j1jjDFSUfbFUEE92t2nx"
   CtxSif = "abc-sif"
   CtxXapi = "abc-xapi"
@@ -20,3 +20,7 @@ Path = "./config.toml"
   CtxMetaXapi = "abc-xapi-meta"
   Server = "192.168.76.32"
   Port = 5777
+
+[Temp]
+  VerSif = 1
+  VerXapi = 1

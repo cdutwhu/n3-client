@@ -17,8 +17,7 @@ func PublishXAPI(c echo.Context) error {
 		})
 	}()
 
-	body, e := ioutil.ReadAll(c.Request().Body)
-	s.PE(e)
-	n := s.XAPI(string(body))
-	return c.JSON(http.StatusAccepted, s.Spf("%d tuples has been sent", n))
+	body := s.Must(ioutil.ReadAll(c.Request().Body)).([]byte)
+	n, termID := s.Xapi(string(body))
+	return c.JSON(http.StatusAccepted, s.FSf("%d tuples has been sent, @ %s", n, termID))
 }

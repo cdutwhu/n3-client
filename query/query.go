@@ -10,29 +10,22 @@ import (
 
 // Init :
 func Init(config *c.Config) {
-	uPC(config == nil, fEf("Init Config"))
+	PC(config == nil, fEf("Init Config"))
 	Cfg = config
 	if g.N3pub == nil {
-		g.N3pub, e = n3grpc.NewPublisher(Cfg.Grpc.Server, Cfg.Grpc.Port)
-		uPE(e)
+		g.N3pub = Must(n3grpc.NewPublisher(Cfg.RPC.Server, Cfg.RPC.Port)).(*n3grpc.Publisher)
 	}
 }
 
-func query(t qType, sp []string) (s, p, o []string, v []int64) {
-	// uPC(Cfg == nil || g.N3pub == nil, fEf("Missing Init, do 'Init(&config) before querying'\n"))
-
+func query(t g.SQType, sp []string) (s, p, o []string, v []int64) {
 	if Cfg == nil || g.N3pub == nil {
 		Cfg = c.GetConfig("./config.toml", "../config/config.toml")
 		Init(Cfg)
 	}
 
-	ctx := u.CaseAssign(t, SIF, XAPI, Cfg.Grpc.CtxSif, Cfg.Grpc.CtxXapi).(string)
-	qTuple := &pb.SPOTuple{
-		Subject:   sp[0],
-		Predicate: sp[1],
-		Object:    "",
-	}
-	for _, t := range g.N3pub.Query(qTuple, Cfg.Grpc.Namespace, ctx) {
+	qTuple := &pb.SPOTuple{Subject: sp[0], Predicate: sp[1], Object: ""}
+	ctx := u.CaseAssign(t, g.SIF, g.XAPI, g.META_SIF, g.META_XAPI, Cfg.RPC.CtxSif, Cfg.RPC.CtxXapi, Cfg.RPC.CtxMetaSif, Cfg.RPC.CtxMetaXapi).(string)
+	for _, t := range g.N3pub.Query(qTuple, Cfg.RPC.Namespace, ctx) {
 		s, p, o, v = append(s, t.Subject), append(p, t.Predicate), append(o, t.Object), append(v, t.Version)
 	}
 	return
@@ -40,10 +33,22 @@ func query(t qType, sp []string) (s, p, o []string, v []int64) {
 
 // Sif :
 func Sif(sp ...string) (s, p, o []string, v []int64) {
-	return query(SIF, sp)
+	return query(g.SIF, sp)
 }
 
 // Xapi :
 func Xapi(sp ...string) (s, p, o []string, v []int64) {
-	return query(XAPI, sp)
+	return query(g.XAPI, sp)
+}
+
+// Meta :
+func Meta(t g.SQType, sp ...string) (s, p, o []string, v []int64) {
+	switch t {
+	case g.SIF:
+		return query(g.META_SIF, sp)
+	case g.XAPI:
+		return query(g.META_XAPI, sp)
+	default:
+		panic("Meta: qType is not supported!")
+	}
 }

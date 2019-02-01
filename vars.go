@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	uPE  = u.PanicOnError
-	uPE1 = u.PanicOnError1
-	uPH  = u.PanicHandle
-	uPC  = u.PanicOnCondition
+	PE  = u.PanicOnError
+	PE1 = u.PanicOnError1
+	PH  = u.PanicHandle
+	PC  = u.PanicOnCondition
 
 	sI  = strings.Index
 	sLI = strings.LastIndex
@@ -26,6 +26,6 @@ var (
 
 	fPln = fmt.Println
 	fPf  = fmt.Printf
-	fEpf = fmt.Errorf
-	fSpf = fmt.Sprintf
+	fEf  = fmt.Errorf
+	fSf  = fmt.Sprintf
 )

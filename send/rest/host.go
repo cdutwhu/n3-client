@@ -29,5 +29,5 @@ func HostHTTPForPubAsync() {
 	e.POST(s.Cfg.Rest.XapiPath, ctrl.PublishXAPI)
 
 	// Server
-	e.Start(s.Spf(":%d", s.Cfg.Rest.Port))
+	e.Start(s.FSf(":%d", s.Cfg.Rest.Port))
 }

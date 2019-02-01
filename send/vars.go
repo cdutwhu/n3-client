@@ -10,26 +10,23 @@ import (
 )
 
 var (
-	uPE  = u.PanicOnError
-	PE   = uPE
-	uPE1 = u.PanicOnError1
-	PE1  = uPE1
-	uPC  = u.PanicOnCondition
-	PC   = uPC
-	uPH  = u.PanicHandle
-	PH   = uPH
-	uPHE = u.PanicHandleEx
-	PHE  = uPHE
-	uLE  = u.LogOnError
-	LE   = uLE
+	PE   = u.PanicOnError
+	PE1  = u.PanicOnError1
+	PC   = u.PanicOnCondition
+	PH   = u.PanicHandle
+	PHE  = u.PanicHandleEx
+	LE   = u.LogOnError
+	Must = u.Must
+
 	fPln = fmt.Println
-	Pln  = fPln
+	FPln = fPln
 	fPf  = fmt.Printf
-	Pf   = fPf
+	FPf  = fPf
 	fEf  = fmt.Errorf
-	Ef   = fEf
-	fSpf = fmt.Sprintf
-	Spf  = fSpf
+	FEf  = fEf
+	fSf  = fmt.Sprintf
+	FSf  = fSf
+
 	lPln = log.Println
 	LPln = lPln
 
@@ -38,19 +35,11 @@ var (
 
 	e   error
 	Cfg *c.Config
+	ver int64 = 1
 )
 
 const (
 	TERMMARK = "ENDENDEND"
 	HEADTRIM = "sif."
-	DELAY    = 200
-)
-
-type (
-	sType int
-)
-
-const (
-	SIF  sType = 0
-	XAPI sType = 1
+	DELAY    = 300
 )

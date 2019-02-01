@@ -9,7 +9,7 @@ import (
 // Jstr2Y is
 func Jstr2Y(jsonstr string) string {
 	yamlbytes, err := yaml.JSONToYAML([]byte(jsonstr))
-	uPE1(err, "error on yaml.JSONToYAML")
+	PE1(err, "error on yaml.JSONToYAML")
 	//return string(yamlbytes)
 	return YAMLRmHangStr(string(yamlbytes)) /* avoid hanging string value */
 }
@@ -17,20 +17,20 @@ func Jstr2Y(jsonstr string) string {
 // Jb2Yb is
 func Jb2Yb(jsonbytes []byte) []byte {
 	yamlbytes, err := yaml.JSONToYAML(jsonbytes)
-	uPE1(err, "error on yaml.JSONToYAML")
+	PE1(err, "error on yaml.JSONToYAML")
 	return yamlbytes
 }
 
 // Jfile2Y is
 func Jfile2Y(jsonfile string) string {
 	jsonbytes, err := ioutil.ReadFile(jsonfile)
-	uPE1(err, "error on ioutil.ReadFile")
+	PE1(err, "error on ioutil.ReadFile")
 	return Jstr2Y(string(jsonbytes))
 }
 
 // Jfile2Yb is
 func Jfile2Yb(jsonfile string) []byte {
 	jsonbytes, err := ioutil.ReadFile(jsonfile)
-	uPE1(err, "error on ioutil.ReadFile")
+	PE1(err, "error on ioutil.ReadFile")
 	return Jb2Yb(jsonbytes)
 }

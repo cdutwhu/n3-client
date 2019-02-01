@@ -21,17 +21,14 @@ type rest struct {
 	XapiPath string
 }
 
-type grpc struct {
-	Namespace string
-	CtxSif    string
-	CtxXapi   string
-	Server    string
-	Port      int
-}
-
-type temp struct {
-	VerSif  int64
-	VerXapi int64
+type rpc struct {
+	Namespace   string
+	CtxSif      string
+	CtxXapi     string
+	CtxMetaSif  string
+	CtxMetaXapi string
+	Server      string
+	Port        int
 }
 
 // Config is toml
@@ -40,8 +37,7 @@ type Config struct {
 	Global      global
 	Filewatcher filewatcher
 	Rest        rest
-	Grpc        grpc
-	Temp        temp
+	RPC         rpc
 }
 
 // GetConfig :
@@ -57,19 +53,17 @@ func GetConfig(cfgfiles ...string) *Config {
 
 // set is
 func (cfg *Config) set() *Config {
-	defer func() { uPH(recover(), "./log.txt", true) }()
+	defer func() { PH(recover(), "./log.txt", true) }()
 	path := cfg.Path /* make a copy of original path for restoring */
-	_, e := toml.DecodeFile(cfg.Path, cfg)
+	Must(toml.DecodeFile(cfg.Path, cfg))
 	cfg.Path = path
-	uPE(e)
 	return cfg
 }
 
 // Save is
 func (cfg *Config) Save() {
-	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
-	f, e := os.OpenFile(cfg.Path, os.O_WRONLY|os.O_TRUNC, 0666)
-	uPE(e)
+	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
+	f := Must(os.OpenFile(cfg.Path, os.O_WRONLY|os.O_TRUNC, 0666)).(*os.File)
 	defer f.Close()
-	uPE(toml.NewEncoder(f).Encode(cfg))
+	PE(toml.NewEncoder(f).Encode(cfg))
 }

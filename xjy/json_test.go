@@ -9,9 +9,8 @@ import (
 
 func TestJSONScanObjects(t *testing.T) {
 	cfg := c.GetConfig("./config.toml", "../config/config.toml")
-	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
-	jsonbytes, err := ioutil.ReadFile("./files/xapifile.json")
-	uPE(err)
+	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
+	jsonbytes := Must(ioutil.ReadFile("./files/xapifile.json")).([]byte)
 
 	// ids, objs, pos := JSONScanObjects(string(jsonbytes), "id")
 	// for i, id := range ids {

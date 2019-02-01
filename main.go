@@ -25,12 +25,12 @@ import (
 // 	PC(!sHS(filename, ".xml"), epf("%s is not an XML file", filename))
 
 // 	file, err := os.Open(filename)
-// 	PE1(err, fSpf("Cannot read in file %s\n", filename))
+// 	PE1(err, fSf("Cannot read in file %s\n", filename))
 // }
 
 func main() {
 	cfg := c.GetConfig("./config.toml", "./config/config.toml")
-	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
+	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
 	s.Init(cfg)
 	q.Init(cfg)
 

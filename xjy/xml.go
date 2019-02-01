@@ -1,8 +1,6 @@
 package xjy
 
 import (
-	"errors"
-
 	u "github.com/cdutwhu/go-util"
 )
 
@@ -59,7 +57,7 @@ func XMLObjStrByID(xml, idmark, rid string) string {
 // 		if e := sI(xml[s:], fSpf("</%s>", tag)); e > 0 {
 // 			return xml[s : s+e+len(tag)+3]
 // 		}
-// 		PE(errors.New("Not a valid XML"))
+// 		PE(fEf("Not a valid XML"))
 // 	}
 // 	return ""
 // }
@@ -69,12 +67,12 @@ func XMLEleStrByTag(xml, tag string, idx int) string {
 	startNext, cnt := 0, 0
 AGAIN:
 	xml = xml[startNext:]
-	s, s1 := sI(xml, fSpf("<%s>", tag)), sI(xml, fSpf("<%s ", tag))
+	s, s1 := sI(xml, fSf("<%s>", tag)), sI(xml, fSf("<%s ", tag))
 	if s1 > s {
 		s = s1
 	}
 	if s >= 0 {
-		if peR := sI(xml[s:], fSpf("</%s>", tag)); peR > 0 {
+		if peR := sI(xml[s:], fSf("</%s>", tag)); peR > 0 {
 			startNext = s + peR + len(tag) + 3
 			cnt++
 			if idx == cnt {
@@ -82,7 +80,7 @@ AGAIN:
 			}
 			goto AGAIN
 		}
-		uPE(errors.New("Invalid XML"))
+		PE(fEf("Invalid XML"))
 	}
 	return ""
 }
@@ -91,7 +89,7 @@ AGAIN:
 func XMLFindAttributes(xmlele string) (attributes, attriValues []string, attributeList string) { /* 'map' may cause mis-order, so use slice */
 	l := len(xmlele)
 	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
-		uPE(fEpf("Not a valid XML section"))
+		PE(fEf("Not a valid XML section"))
 		return nil, nil, ""
 	}
 
@@ -112,7 +110,7 @@ func XMLFindChildren(xmlele, id string) (uids, children []string, childList stri
 	l := len(xmlele)
 	if l == 0 || xmlele[0] != '<' || xmlele[l-1] != '>' {
 		fPln(xmlele)
-		uPE(fEpf("Not a valid XML section"))
+		PE(fEf("Not a valid XML section"))
 		return nil, nil, "nil", -1
 	}
 
@@ -159,8 +157,8 @@ func XMLFindChildren(xmlele, id string) (uids, children []string, childList stri
 	}
 
 	if len(children) > 1 && u.AS2AG(children...).AllAreIdentical() {
-		//return uids, children, fSpf("[%d]%s", len(children), children[0]), len(children)
-		return uids, children, fSpf("[]%s", children[0]), len(children) /* get array count from db, not here. */
+		//return uids, children, fSf("[%d]%s", len(children), children[0]), len(children)
+		return uids, children, fSf("[]%s", children[0]), len(children) /* get array count from db, not here. */
 	}
 
 	return uids, children, sJ(children, " + "), 0

@@ -9,28 +9,21 @@ import (
 )
 
 var (
-	uPE  = u.PanicOnError
-	uPE1 = u.PanicOnError1
-	uPC  = u.PanicOnCondition
-	uPH  = u.PanicHandle
-	uPHE = u.PanicHandleEx
-	uLE  = u.LogOnError
+	PE   = u.PanicOnError
+	PE1  = u.PanicOnError1
+	PC   = u.PanicOnCondition
+	PH   = u.PanicHandle
+	PHE  = u.PanicHandleEx
+	LE   = u.LogOnError
+	Must = u.Must
 
 	fPln = fmt.Println
 	fPf  = fmt.Printf
 	fEf  = fmt.Errorf
-	fSpf = fmt.Sprintf
+	fSf  = fmt.Sprintf
+
 	lPln = log.Println
 
 	e   error
 	Cfg *c.Config
-)
-
-type (
-	qType int
-)
-
-const (
-	SIF  qType = 0
-	XAPI qType = 1
 )

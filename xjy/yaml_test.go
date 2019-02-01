@@ -8,8 +8,8 @@ import (
 )
 
 func TestYAMLScanAsync(t *testing.T) {
-	cfg := c.GetConfig("./config.toml", "../config/config.go")
-	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
+	cfg := c.GetConfig("./config.toml", "../config/config.toml")
+	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
 
 	//yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)
 	//ioutil.WriteFile(`./files/nswdig.yaml`, []byte(yamlstr), 0666)
@@ -19,7 +19,7 @@ func TestYAMLScanAsync(t *testing.T) {
 	ioutil.WriteFile(`./files/xapifile.yaml`, []byte(yamlstr), 0666)
 
 	idx := 0
-	go YAMLScanAsync(yamlstr, "id", XAPI, true, func(path, value, id string) {
+	go YAMLScanAsync(yamlstr, "id", JSON, true, func(path, value, id string) {
 		idx++
 		fPf("%06d : %s\n", idx, path)
 		fPf("%s\n", value)

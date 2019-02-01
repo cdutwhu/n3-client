@@ -167,8 +167,7 @@ func YAMLLevel(line string) int {
 
 // YAMLLines2Nodes is ,
 func YAMLLines2Nodes(lines []string, idmark string, dt DataType) *[]Node {
-	fromSIF := (dt == XML) || (dt == SIF)
-	fromXAPI := (dt == JSON) || (dt == XAPI)
+	fromSIF, fromXAPI := (dt == XML), (dt == JSON)
 
 	if fromSIF && !sHP(idmark, "-") {
 		idmark = "-" + idmark

@@ -9,11 +9,10 @@ import (
 
 func TestXMLScanObjects(t *testing.T) {
 	cfg := c.GetConfig("./config.toml", "../config/config.toml")
-	defer func() { uPH(recover(), cfg.Global.ErrLog, true) }()
+	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
 
 	//xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
-	xmlbytes, err := ioutil.ReadFile("./files/nswdig.xml")
-	uPE(err)
+	xmlbytes := Must(ioutil.ReadFile("./files/nswdig.xml")).([]byte)
 
 	XMLModelInfo(string(xmlbytes), "RefId", true,
 		func(p, v string) {
