@@ -10,7 +10,6 @@ import (
 	q "../query"
 	"../xjy"
 	u "github.com/cdutwhu/go-util"
-	"github.com/google/uuid"
 	"github.com/nsip/n3-messages/messages"
 	"github.com/nsip/n3-messages/n3grpc"
 )
@@ -26,36 +25,29 @@ func Junk(n int) {
 }
 
 // Terminate :
-func Terminate(t g.SQType, objID string) string {
+func Terminate(t g.SQType, objID, termID string) {
 	defer func() { ver++ }()
 	if Cfg == nil || g.N3pub == nil {
 		Cfg = c.GetConfig("./config.toml", "../config/config.toml")
 		Init(Cfg)
 	}
 
-	if objID == "" {
-		return ""
-	}
-
-	termID := uuid.New().String()
 	tuple := Must(messages.NewTuple(termID, TERMMARK, objID)).(*pb.SPOTuple)
 	tuple.Version = ver
 	ctx := u.CaseAssign(t, g.SIF, g.XAPI, Cfg.RPC.CtxSif, Cfg.RPC.CtxXapi).(string)
 	PE(g.N3pub.Publish(tuple, Cfg.RPC.Namespace, ctx))
-	return termID
 }
 
 // RequireVer :
-func RequireVer(t g.SQType, objID string) int64 {
+func RequireVer(t g.SQType, objID string) (ver int64, termID string) {
 	if Cfg == nil || g.N3pub == nil {
 		Cfg = c.GetConfig("./config.toml", "../config/config.toml")
 		Init(Cfg)
 	}
-	_, _, o, _ := q.Meta(t, objID, "V")
-	if len(o) > 0 {
-		return u.Str(o[0]).ToInt64() + 1
-	}
-	return 1
+	_, p, o, _ := q.Meta(t, objID, "V")
+	PC(len(p) == 0, fEf("Got Version Error"))
+	ver, termID = u.Str(o[0]).ToInt64()+1, p[0]
+	return
 }
 
 /************************************************************/
@@ -91,13 +83,16 @@ func Sif(str string) (cntV, cntS, cntA int, termID string) {
 		},
 	)
 
-	doneV, prevID := make(chan int), ""
+	doneV, prevID, prevTermID := make(chan int), "", ""
 	go xjy.YAMLScanAsync(xjy.Xstr2Y(content.V()), "RefId", xjy.XML, true,
 		func(p, v, id string) {
-			defer func() { ver, cntV, prevID = ver+1, cntV+1, id }()
-			if prevID != id {
-				ver, termID = RequireVer(sqType, id), Terminate(sqType, prevID)
-				fPln(ver, termID)
+			defer func() { ver, cntV, prevID, prevTermID = ver+1, cntV+1, id, termID }()
+			if id != prevID {
+				ver, termID = RequireVer(sqType, id)
+				fPln("Got:", ver, termID)
+				if prevID != "" {
+					Terminate(sqType, prevID, prevTermID)
+				}
 			}
 			tuple := Must(messages.NewTuple(id, u.Str(p).RmPrefix(HEADTRIM), v)).(*pb.SPOTuple)
 			tuple.Version = ver
@@ -108,9 +103,9 @@ func Sif(str string) (cntV, cntS, cntA int, termID string) {
 
 	lPln(fSf("<%06d> data tuples sent, <%06d> struct tuples sent, <%06d> array tuples sent\n", cntV, cntS, cntA))
 
-	termID = Terminate(sqType, prevID) // *** last object terminator ***
+	Terminate(sqType, prevID, prevTermID) // *** last object terminator ***
 CHECK:
-	if _, _, _, v := q.Sif(termID, TERMMARK); v == nil || len(v) == 0 {
+	if _, _, _, v := q.Sif(prevTermID, TERMMARK); v == nil || len(v) == 0 {
 		time.Sleep(DELAY * time.Millisecond)
 		goto CHECK
 	}
@@ -124,12 +119,15 @@ func Xapi(str string) (cnt int, termID string) {
 	content, sqType := u.Str(str), g.XAPI
 	PC(content.L() == 0 || !content.IsJSON(), fEf("Incoming string is invalid json\n"))
 
-	done, prevID := make(chan int), ""
+	done, prevID, prevTermID := make(chan int), "", ""
 	go xjy.YAMLScanAsync(xjy.Jstr2Y(content.V()), "id", xjy.JSON, true, func(p, v, id string) {
-		defer func() { ver, cnt, prevID = ver+1, cnt+1, id }()
-		if prevID != id {
-			ver, termID = RequireVer(sqType, id), Terminate(sqType, prevID)
-			fPln(ver, termID)
+		defer func() { ver, cnt, prevID, prevTermID = ver+1, cnt+1, id, termID }()
+		if id != prevID {
+			ver, termID = RequireVer(sqType, id)
+			fPln("Got:", ver, termID)
+			if prevID != "" {
+				Terminate(sqType, prevID, prevTermID)
+			}
 		}
 		tuple := Must(messages.NewTuple(id, p, v)).(*pb.SPOTuple)
 		tuple.Version = ver
@@ -139,9 +137,9 @@ func Xapi(str string) (cnt int, termID string) {
 
 	lPln(fSf("<%06d> tuples sent\n", cnt))
 
-	termID = Terminate(sqType, prevID) // *** last object terminator ***
+	Terminate(sqType, prevID, prevTermID) // *** last object terminator ***
 CHECK:
-	if _, _, _, v := q.Xapi(termID, TERMMARK); v == nil || len(v) == 0 {
+	if _, _, _, v := q.Xapi(prevTermID, TERMMARK); v == nil || len(v) == 0 {
 		time.Sleep(DELAY * time.Millisecond)
 		goto CHECK
 	}
