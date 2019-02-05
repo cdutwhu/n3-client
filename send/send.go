@@ -18,7 +18,7 @@ import (
 func Junk(n int) {
 	PC(Cfg == nil || g.N3pub == nil, fEf("Missing Init, do 'Init(&config) before sending'\n"))
 	for i := 0; i < n; i++ {
-		tuple := Must(messages.NewTuple("sub", "pre", "obj")).(*pb.SPOTuple)
+		tuple := Must(messages.NewTuple("ab", "pre", "obj")).(*pb.SPOTuple)
 		tuple.Version = int64(i)
 		PE(g.N3pub.Publish(tuple, Cfg.RPC.Namespace, Cfg.RPC.CtxSif))
 	}

@@ -156,7 +156,7 @@ func XMLFindChildren(xmlele, id string) (uids, children []string, childList stri
 		uids = append(uids, id)
 	}
 
-	if len(children) > 1 && u.AS2AG(children...).AllAreIdentical() {
+	if len(children) > 1 && u.Strs(children).ToG().AllAreIdentical() {
 		//return uids, children, fSf("[%d]%s", len(children), children[0]), len(children)
 		return uids, children, fSf("[]%s", children[0]), len(children) /* get array count from db, not here. */
 	}

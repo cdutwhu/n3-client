@@ -11,7 +11,7 @@ import (
 func TestJunk(t *testing.T) {
 	defer func() { PH(recover(), Cfg.Global.ErrLog, true) }()
 	TestN3LoadConfig(t)
-	Junk(10000)
+	Junk(10)
 	time.Sleep(2 * time.Second)
 }
 
