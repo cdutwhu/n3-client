@@ -1,196 +1,160 @@
 package xjy
 
 import (
-	u "github.com/cdutwhu/go-util"
+	"io/ioutil"
+
+	"github.com/google/uuid"
+	g "github.com/nsip/n3-client/global"
+	pp "github.com/nsip/n3-client/preprocess"
 )
 
-const (
-	lenGUID = 36 // GUID 36 chars length
-)
+// JSONObjInfo : (must have TOP-LEVEL "ID" like `"ID": "6690e6c9-3ef0-4ed3-8b37-7f3964730bee",` )
+func JSONObjInfo(json, dfltRoot, pDel string) (IDTag, ID, root string, autoID, addedRoot bool, jsonObj string) {
+	root, addedRoot, newJSON := JSONWrapRoot(json, dfltRoot)
+	jsonObj = IF(addedRoot, newJSON, json).(string)
 
-// JSONScanObjects : (return the whole json string) (must have top-level "id" like `"id": "6690e6c9-3ef0-4ed3-8b37-7f3964730bee",` )
-func JSONScanObjects(json, idmark string) (ids, objstrs []string, posarr []int) {
-	idmark = u.Str(idmark).MkQuotes(u.QDouble)
-	idmark = u.Str(idmark).MkSuffix(":")
-
-	level, arrLevel, done1, done2 := 0, 0, false, false
-	for i, c := range json {
-		switch c {
-		case '{':
-			level++
-		case '}':
-			level--
-		case '[':
-			arrLevel++
-		case ']':
-			arrLevel--
-		}
-
-		/* single object */
-		if level == 1 && arrLevel == 0 && done1 {
-			continue
-		}
-		if level == 1 && arrLevel == 0 && !done1 {
-			if p, pe, parr := sI(json[i:], idmark), sI(json[i:], "\","), sI(json[i:], "["); p > 0 && pe > 0 && parr < 0 {
-				posarr = append(posarr, i)
-				ids = append(ids, json[i+pe-lenGUID:i+pe])
-				done1 = true
+	jsonContent, _ := JSONChildValue(jsonObj, root)
+	mMarkUUID := make(map[string]string)
+	sidtag := "I will be the shortest length ID mark, the shortest ID Mark is what we wanted"
+	for _, child := range JSONObjChildren(jsonContent) {
+		Child := S(child)
+		if IArrEleIn(child, Ss{"id", "ID", "Id"}) || (Child.ToLower() == S(dfltRoot).ToLower()+"id") {
+			if id, _ := JSONXPathValue(jsonObj, root+pDel+child, pDel, []int{1, 1}...); S(id).IsUUID() {
+				sidtag = child
+				mMarkUUID[child] = id
+				break
 			}
 		}
-		if level == 0 && arrLevel == 0 && done1 {
-			objstrs = append(objstrs, json[posarr[0]:i+1])
-			break
-		}
-
-		/* object array */
-		if level == 2 && arrLevel == 1 && done2 {
-			continue
-		}
-		if level == 2 && arrLevel == 1 && !done2 {
-			if p, pe := sI(json[i:], idmark), sI(json[i:], "\","); p > 0 && pe > 0 {
-				posarr = append(posarr, i)
-				ids = append(ids, json[i+pe-lenGUID:i+pe])
-				done2 = true
+		if !Child.HP("[]") && (Child.HS("id") || Child.HS("ID") || Child.HS("Id")) {
+			if id, _ := JSONXPathValue(jsonObj, root+pDel+child, pDel, []int{1, 1}...); S(id).IsUUID() {
+				mMarkUUID[child] = id
+				sidtag = IF(len(child) < len(sidtag), child, sidtag).(string)
 			}
-		}
-		if level == 1 && arrLevel == 1 && done2 {
-			objstrs = append(objstrs, json[posarr[len(posarr)-1]:i+1])
-			done2 = false
 		}
 	}
+	if id, ok := mMarkUUID[sidtag]; ok && id != "" {
+		IDTag, ID, autoID = sidtag, id, false
+	} else {
+		IDTag, ID, autoID = "AutoID", uuid.New().String(), true
+	}
+
+	// fPln("DEBUG: ", " IDTag: ", IDTag, " ID: ", ID, " autoID: ", autoID)
+
 	return
 }
 
-// JSONObjStrByID is
-func JSONObjStrByID(json, idmark, ID string) string {
-	ids, objstrs, _ := JSONScanObjects(json, idmark)
-	for i, id := range ids {
-		if id == ID {
-			return objstrs[i]
+// JSONModelInfo :
+func JSONModelInfo(json, dfltRoot, pDel string,
+	OnStructFetch func(string, string, []string, bool) error,
+	OnArrayFetch func(string, string, int, bool) error) (string, string, error) {
+
+	_, id, root, _, addedRoot, _ := JSONObjInfo(json, dfltRoot, pDel) //   *** find ID Value ***
+	id = S(id).RmQuotes(QDouble).V()
+
+	mFT, mArr := JSONArrInfo(json, IF(addedRoot, dfltRoot, "").(string), pDel, id, nil)
+	j, lFT, lArr := 0, len(*mFT), len(*mArr)
+	for k, v := range *mFT {
+		j++
+		if e := OnStructFetch(k, id, v, (j == lFT)); e != nil {
+			return "", "", e
 		}
 	}
-	return ""
+
+	j = 0
+	for k, v := range *mArr {
+		j++
+		if e := OnArrayFetch(k, v.ID, v.Count, (j == lArr)); e != nil {
+			return "", "", e
+		}
+	}
+	return id, root, nil
 }
 
-// JSONEleStrByTag is
-func JSONEleStrByTag(json, tag string) string {
-	l := len(json)
+// JSONObjScan :
+func JSONObjScan(json, dfltRoot string,
+	OnStructFetch func(string, string, []string, bool) error,
+	OnArrayFetch func(string, string, int, bool) error) (IDs, Objs []string, err error) {
 
-	if l == 0 || json[0] != '{' || json[l-1] != '}' {
-		fPln(json)
-		PE(fEf("Not a valid json section"))
-		return ""
-	}
-
-	tag = u.Str(tag).MkQuotes(u.QDouble)
-	tag = u.Str(tag).MkSuffix(":")
-
-	level, arrLevel := 0, 0
-	for _, c := range json {
-		switch c {
-		case '{':
-			level++
-		case '}':
-			level--
-		case '[':
-			arrLevel++
-		case ']':
-			arrLevel--
-		}
-
-		if p := sI(json, tag); p >= 0 && level == 1 {
-			peR := sI(json[p:], "\",")
-			bFlat := !u.Str(json[p:p+peR+1]).HasAny('{', '}')
-
-			if peR > 0 && bFlat { /* not last one, flat one */
-				return u.Str(json[p : p+peR+1]).MkBrackets(u.BCurly)
-			}
-			if peR < 0 && bFlat {
-				peR = sLI(json[p:], "\"")
-				return u.Str(json[p : p+peR+1]).MkBrackets(u.BCurly)
-			}
-			if !bFlat { /* complex one */
-				str, _, _ := u.Str(json[p:]).BracketsPos(u.BCurly, 1, 1)
-				//return u.Str(json[p : p+rR+1]).MkBrackets(u.BCurly)
-				return str
+	if ok, eleType, n, eles := IsJSONArrOnFmtL0(json); ok {
+		if eleType == J_OBJ {
+			for i := 1; i <= n; i++ {
+				if id, root, e := JSONModelInfo(eles[i-1], dfltRoot, g.DELIPath, OnStructFetch, OnArrayFetch); e != nil {
+					return nil, nil, e
+				} else {
+					IDs, Objs = append(IDs, id), append(Objs, root)
+				}
 			}
 		}
-	}
-	return u.Str("").MkBrackets(u.BCurly)
-}
-
-// JSONFindChildren :
-func JSONFindChildren(jsonele string) (children []string, childList string) {
-	l := len(jsonele)
-	if l == 0 || jsonele[0] != '{' || jsonele[l-1] != '}' {
-		fPln(jsonele)
-		PE(fEf("Not a valid json section"))
-		return nil, "nil"
-	}
-
-	level, childposl, childposr := 0, []int{}, []int{}
-	for i, c := range jsonele[1:] { // skip the first '{'
-		i++
-
-		if c == '{' {
-			level++
-		}
-		if c == '}' {
-			level--
-		}
-		if level == 1 && c == '"' {
-			if pR := sI(jsonele[i+1:], "\""); pR >= 0 && jsonele[i+1+pR+1] == ':' {
-				// fPln(string(jsonele[i+1]))
-				childposl = append(childposl, i)
-				childposr = append(childposr, i+1+pR)
-			}
-		}
-	}
-
-	for i := range childposl {
-		child := jsonele[childposl[i] : childposr[i]+1]
-
-		/* deal with array element */
-		childvalue := ""
-		if i < len(childposl)-1 {
-			childvalue = jsonele[childposr[i]+2 : childposl[i+1]]
+	} else {
+		if id, root, e := JSONModelInfo(json, dfltRoot, g.DELIPath, OnStructFetch, OnArrayFetch); e != nil {
+			return nil, nil, e
 		} else {
-			childvalue = jsonele[childposr[i]+2:]
-		}
-		count := u.Str(childvalue).BracketPairCount(u.BCurly)
-
-		if count == 0 { /* not an array element */
-			children = append(children, u.Str(child).RmQuotes())
-		} else {
-			for j := 0; j < count; j++ {
-				children = append(children, u.Str(child).RmQuotes())
-			}
+			IDs, Objs = append(IDs, id), append(Objs, root)
 		}
 	}
-
-	// if len(children) > 1 && u.AllAreIdentical(children...) {
-	// 	return children, spf("[%d]%s", len(children), children[0])
-	// }
-
-	return children, sJ(children, " + ")
+	return IDs, Objs, nil
 }
 
-// JSONYieldFamilyTree :
-// func JSONYieldFamilyTree(jsonstr string, objs []string, skipNoChild bool, mapkeyprefix string, mapEleChildList *map[string]string) {
-// 	if len(mapkeyprefix) > 0 {
-// 		mapkeyprefix += "."
-// 	}
-// 	for _, obj := range objs {
-// 		if _, ok := (*mapEleChildList)[mapkeyprefix+obj]; ok {
-// 			continue
-// 		}
-// 		jsonele := JSONEleStrByTag(jsonstr, obj)
-// 		children, childlist := JSONFindChildren(jsonele)
-
-// 		if skipNoChild {
-// 			if len(children) > 0 {
-
+// // JSONArrDiv :
+// func JSONArrDiv(json string, nDiv int) (jsonarrs []string, rem bool) {
+// 	if ok, eleType, n, eles := IsJSONArr(json); ok {
+// 		if eleType == J_OBJ {
+// 			nPer, nRem := n/nDiv, n%nDiv
+// 			var lows, highs []int
+// 			if nRem != 0 {
+// 				lows, highs = make([]int, nDiv+1), make([]int, nDiv+1)
+// 				for i := 0; i < nDiv; i++ {
+// 					lows[i] = nPer * i
+// 					highs[i] = nPer*(i+1) - 1
+// 				}
+// 				lows[nDiv] = highs[nDiv-1] + 1
+// 				highs[nDiv] = n - 1
+// 			} else {
+// 				lows, highs = make([]int, nDiv), make([]int, nDiv)
+// 				for i := 0; i < nDiv; i++ {
+// 					lows[i] = nPer * i
+// 					highs[i] = nPer*(i+1) - 1
+// 				}
 // 			}
+// 			nPart := IF(nRem == 0, nDiv, nDiv+1).(int)
+// 			for i := 0; i < nPart; i++ {
+// 				l, h := lows[i], highs[i]
+// 				jsonarr := ""
+// 				for j := l; j <= h; j++ {
+// 					jsonarr += eles[j] + ",\n"
+// 				}
+// 				jsonarr = "[" + jsonarr[:len(jsonarr)-2] + "]"
+// 				pc(!IsJSON(jsonarr), fEf("JSONArrDiv result error"))
+// 				jsonarr = prepJSON(jsonarr)
+// 				jsonarrs = append(jsonarrs, jsonarr)
+// 			}
+// 			rem = nRem != 0
 // 		}
 // 	}
+// 	return
 // }
+
+func prepJSON(json string) string {
+
+	// *** format json ***
+
+	// json = pp.FmtJSONStr(json, "../preprocess/util/", "./")
+	ioutil.WriteFile("../build/debug_pub/in.json", []byte(json), 0666)
+	json = pp.FmtJSONFile("../../build/debug_pub/in.json", "../preprocess/util/", "./")
+	ioutil.WriteFile("../build/debug_pub/infmt.json", []byte(json), 0666)
+
+	// *** ': null' => ': "null"' ***
+	json = S(json).Replace(`": null`, `": "null"`).V()
+
+	// *** dealing with colon ***
+	if pp.HasColonInValue(json) {
+		json = pp.RplcValueColons(json)
+	}
+
+	// *** convert to ASCII ***
+	if ascii, ajson := UTF8ToASCII(json); !ascii {
+		fPln("is utf8")
+		return ajson
+	}
+	return json
+}

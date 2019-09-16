@@ -1,54 +1,37 @@
 package query
 
 import (
-	c "../config"
-	g "../global"
-	u "github.com/cdutwhu/go-util"
+	g "github.com/nsip/n3-client/global"
 	"github.com/nsip/n3-messages/messages/pb"
-	"github.com/nsip/n3-messages/n3grpc"
 )
 
-// Init :
-func Init(config *c.Config) {
-	PC(config == nil, fEf("Init Config"))
-	Cfg = config
-	if g.N3pub == nil {
-		g.N3pub = Must(n3grpc.NewPublisher(Cfg.RPC.Server, Cfg.RPC.Port)).(*n3grpc.Publisher)
-	}
-}
-
-func query(t g.SQType, sp []string) (s, p, o []string, v []int64) {
-	if Cfg == nil || g.N3pub == nil {
-		Cfg = c.GetConfig("./config.toml", "../config/config.toml")
-		Init(Cfg)
+func query(ctx string, metaQry bool, spo []string) (s, p, o []string, v []int64) {
+	qTuple := &pb.SPOTuple{}
+	switch len(spo) {
+	case 2:
+		qTuple = &pb.SPOTuple{Subject: spo[0], Predicate: spo[1]}
+	case 3:
+		qTuple = &pb.SPOTuple{Subject: spo[0], Predicate: spo[1], Object: spo[2]}
+	default:
+		panic("subject & predicate must be provided to general query. <empty string>-subject & predicate & object must be provided to id query")
 	}
 
-	qTuple := &pb.SPOTuple{Subject: sp[0], Predicate: sp[1], Object: ""}
-	ctx := u.CaseAssign(t, g.SIF, g.XAPI, g.META_SIF, g.META_XAPI, Cfg.RPC.CtxSif, Cfg.RPC.CtxXapi, Cfg.RPC.CtxMetaSif, Cfg.RPC.CtxMetaXapi).(string)
-	for _, t := range g.N3pub.Query(qTuple, Cfg.RPC.Namespace, ctx) {
-		s, p, o, v = append(s, t.Subject), append(p, t.Predicate), append(o, t.Object), append(v, t.Version)
+	if !g.Cfg.Debug.TrialQry {
+		for _, t := range g.N3clt.Query(qTuple, g.Cfg.RPC.Namespace, IF(!metaQry, ctx, ctx+"-meta").(string)) {
+			s, p, o, v = append(s, t.Subject), append(p, t.Predicate), append(o, t.Object), append(v, t.Version)
+		}
+	} else {
+		s, p, o, v = append(s, spo[0]), append(p, spo[1]), append(o, "-999"), append(v, -1)
 	}
 	return
 }
 
-// Sif :
-func Sif(sp ...string) (s, p, o []string, v []int64) {
-	return query(g.SIF, sp)
-}
-
-// Xapi :
-func Xapi(sp ...string) (s, p, o []string, v []int64) {
-	return query(g.XAPI, sp)
+// Data :
+func Data(ctx string, spo ...string) (s, p, o []string, v []int64) {
+	return query(ctx, false, spo)
 }
 
 // Meta :
-func Meta(t g.SQType, sp ...string) (s, p, o []string, v []int64) {
-	switch t {
-	case g.SIF:
-		return query(g.META_SIF, sp)
-	case g.XAPI:
-		return query(g.META_XAPI, sp)
-	default:
-		panic("Meta: qType is not supported!")
-	}
+func Meta(ctx string, spo ...string) (s, p, o []string, v []int64) {
+	return query(ctx, true, spo)
 }

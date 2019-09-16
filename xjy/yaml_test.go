@@ -4,32 +4,19 @@ import (
 	"io/ioutil"
 	"testing"
 
-	c "../config"
+	c "github.com/nsip/n3-client/config"
+	g "github.com/nsip/n3-client/global"
 )
 
-func TestYAMLScanAsync(t *testing.T) {
-	cfg := c.GetConfig("./config.toml", "../config/config.toml")
-	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
+func TestYAMLScan(t *testing.T) {
+	cfg := c.FromFile("../build/config.toml")
+	defer func() { ph(recover(), cfg.ErrLog) }()
 
-	//yamlstr, done := Xfile2Y("./files/nswdig.xml"), make(chan int)
-	//ioutil.WriteFile(`./files/nswdig.yaml`, []byte(yamlstr), 0666)
-	//yamlstr, done := Xfile2Y("./files/staffpersonal.xml"), make(chan int)
-	//ioutil.WriteFile(`./files/staffpersonal.yaml`, []byte(yamlstr), 0666)
-	yamlstr, done := Jfile2Y(`./files/xapifile.json`), make(chan int)
-	ioutil.WriteFile(`./files/xapifile.yaml`, []byte(yamlstr), 0666)
-
-	idx := 0
-	go YAMLScanAsync(yamlstr, "id", JSON, true, func(path, value, id string) {
-		idx++
-		fPf("%06d : %s\n", idx, path)
-		fPf("%s\n", value)
-		fPf("%s\n", id)
-		fPln("-----------------------------------------")
-	}, done)
-	fPf("finish: %d\n", <-done)
-
-	//fbytes, err := ioutil.ReadFile("./files/nswdig.yaml")
-	//PE(err)
+	databytes := must(ioutil.ReadFile("./files/xapi.json")).([]byte)                                  //   *** change file name ***
+	YAMLScan(string(databytes), "ROOT", g.DELIPath, nil, g.JSON, func(path, value, id string) error { //   *** change idmark & DataType ***
+		fPf("%s : %-70s : %s\n", id, path, value)
+		return nil
+	})
 }
 
 func TestYAMLTag(t *testing.T) {

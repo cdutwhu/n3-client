@@ -1,0 +1,15 @@
+{
+    SchoolCourseInfo {
+        RefId
+        SchoolInfoRefId
+        SchoolYear   
+        CourseCode    
+        SubjectAreaList {
+            SubjectArea {
+                Code
+            }
+        }
+        CourseTitle
+        CourseCredits
+    }
+}

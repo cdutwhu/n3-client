@@ -1,0 +1,25 @@
+{
+    curriculum {
+        learning_area
+        area: subject
+        stage
+        yrLvls
+        courses {
+            name
+            outcomes {
+                description
+                id
+            }
+            inquiry_questions
+            focus
+            content_areas {
+                name
+                investigations {
+                    description
+                    ac
+                    examples
+                }
+            }
+        }
+    }
+}

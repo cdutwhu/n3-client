@@ -4,54 +4,59 @@ import (
 	"io/ioutil"
 	"testing"
 
-	c "../config"
+	"github.com/cdutwhu/go-gjxy"
+	c "github.com/nsip/n3-client/config"
+	g "github.com/nsip/n3-client/global"
 )
 
 func TestXMLScanObjects(t *testing.T) {
-	cfg := c.GetConfig("./config.toml", "../config/config.toml")
-	defer func() { PH(recover(), cfg.Global.ErrLog, true) }()
+	sifbytes := must(ioutil.ReadFile("./files/sif.xml")).([]byte)
+	objtags, ids, idtags, starts, ends := XMLScanObjects(string(sifbytes))
+	fPln(len(objtags))
+	for i := range ids {
+		fPf("%25s -- %s -- %s -- %6d -- %6d\n", objtags[i], ids[i], idtags[i], starts[i], ends[i])
+	}
+}
 
-	//xmlbytes, err := ioutil.ReadFile("./files/staffpersonal.xml")
-	xmlbytes := Must(ioutil.ReadFile("./files/nswdig.xml")).([]byte)
+func TestXMLObjStrByID(t *testing.T) {
+	sifbytes := must(ioutil.ReadFile("./files/sif.xml")).([]byte)
+	xmlobj := XMLObjStrByID(string(sifbytes), "1822AF7A-F9CB-4F0D-96EA-9280DD0B6AB2")
+	fPln(xmlobj)
+	fPln()
+	fPln(XMLAttributes(xmlobj))
+}
 
-	XMLModelInfo(string(xmlbytes), "RefId", true,
-		func(p, v string) {
-			fPf("%-90s:: %s\n", p, v)
+func TestXMLInfoScan(t *testing.T) {
+	cfg := c.FromFile("../build/config.toml")
+	defer func() { ph(recover(), cfg.ErrLog) }()
+
+	sifbytes := must(ioutil.ReadFile("./files/sif.xml")).([]byte)
+	XMLInfoScan(string(sifbytes), g.DELIPath,
+		func(p, id string, v []string, lastOne bool) error {
+			fPln("S --->>> ", p, " : ", v)
+			return nil
 		},
-		func(p, v string, n int) {
-			fPf("%-90s:: %s  -- [%d]\n", p, v, n)
+		func(p, id string, n int, lastOne bool) error {
+			if n > 1 {
+				fPf("A --->>> %-100s : %s : %d\n", p, id, n)
+			}
+			return nil
 		},
 	)
-	fPf("finish:\n")
-
-	// ids, objtags, psarr := XMLScanObjects(string(xmlbytes), "RefId")
-	// fPln(len(objtags))
-	// for _, objtag := range objtags {
-	// 	fPln(objtag)
-	// }
-	// for i := range ids {
-	// 	fPf("%s -- %s -- %d\n", objtags[i], ids[i], psarr[i])
-	// }
-
-	//fmt.Print(string(xmlbytes[psarr[1]:psarr[2]]))
-
-	// xmlobj := XMLObjStrByID(string(xmlbytes), "RefId", "D3E34F41-9D75-101A-8C3D-00AA001A1652")
-	// fPln(xmlobj)
-	// fPln()
-	// fPln(XMLFindAttributes(xmlobj))
 }
 
 func TestXMLEleStrByTag(t *testing.T) {
-	fPln(XMLEleStrByTag(`		<OtherNames>
-	<Name Type="AKA">
-		<FamilyName>Anderson</FamilyName>
-		<GivenName>Samuel</GivenName>
-		<FullName>Samuel Anderson</FullName>
-	</Name>
-	<Name Type="PRF">
-		<FamilyName>Rowinski</FamilyName>
-		<GivenName>Sam</GivenName>
-		<FullName>Sam Rowinski </FullName>
-	</Name>
-</OtherNames>`, "Name", 1))
+	fPln(gjxy.XMLTagEleEx(`
+	<OtherNames>
+		<Name Type="AKA">
+			<FamilyName>Anderson</FamilyName>
+			<GivenName>Samuel</GivenName>
+			<FullName>Samuel Anderson</FullName>
+		</Name>
+		<Name Type="PRF">
+			<FamilyName>Rowinski</FamilyName>
+			<GivenName>Sam</GivenName>
+			<FullName>Sam Rowinski </FullName>
+		</Name>
+	</OtherNames>`, "Name", 3))
 }

@@ -2,23 +2,19 @@ package config
 
 import (
 	"fmt"
-	"log"
 
 	u "github.com/cdutwhu/go-util"
+	w "github.com/cdutwhu/go-wrappers"
+)
+
+type (
+	S = w.Str
 )
 
 var (
-	PE   = u.PanicOnError
-	PE1  = u.PanicOnError1
-	PC   = u.PanicOnCondition
-	PH   = u.PanicHandle
-	PHE  = u.PanicHandleEx
-	LE   = u.LogOnError
-	Must = u.Must
-
+	pe   = u.PanicOnError
+	ph   = u.PanicHandle
+	must = u.Must
 	fPln = fmt.Println
-	fPf  = fmt.Printf
-	fEf  = fmt.Errorf
 	fSf  = fmt.Sprintf
-	lPln = log.Println
 )
